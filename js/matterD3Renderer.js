@@ -4,7 +4,6 @@
 
 
 function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
-    var gStatic = _gStatic;
     var gDynamic = _gDynamic;
     var engine = _engine;
 
@@ -49,11 +48,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         }
     }
 
-    function createClassNameFromBodyForStatic(d) {
-        return createClassNameFromBody(d, "static");
-    }
-
-    function createClassNameFromBodyForDynamic(d) {
+    function createClassNameFromBody(d) {
         return createClassNameFromBody(d, "dynamic");
     }
 
@@ -141,7 +136,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
 
         data.enter()
             .append("path")
-            .attr("class", createClassNameFromBodyForDynamic)
+            .attr("class", createClassNameFromBody)
             .style("fill", function (d) {
                 return d.color != null ? d.color : "black";
             })
@@ -159,7 +154,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         data.exit().remove();
     }
 
-    function renderD3DynamicTitles() {
+    function renderD3Titles() {
         var bodiesWithTitles = Matter.Composite.allBodies(engine.world).filter(hasTitle);
 
         if(bodiesWithTitles.length > 0) {
@@ -192,7 +187,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         if(gDynamic != null) {
             renderD3Img();
             renderD3Bodies();
-            renderD3DynamicTitles();
+            renderD3Titles();
         }
     }
 }
