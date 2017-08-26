@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+
+    <script src="lib/d3.v4.js"></script>
+    <script src="lib/matter.js"></script>
+
+    <script src="js/matterD3Renderer.js"></script>
+</head>
+<body>
+
+<div id="svgcanvas"></div>
+
+<script>
+    /* global Matter */
+
+    function createSvg() {
+        d3.select("#svgcanvas")
+            .attr("width", window.innerWidth)
+            .attr("height", window.innerHeight)
+    }
+
+    const engine = Matter.Engine.create();
+
+    Matter.Engine.run(engine);
+
+    var d3Renderer = new MatterD3Renderer(engine, gStatic, gDynamic);
+    Matter.Events.on(engine, "afterUpdate", function () {
+        d3Renderer.renderD3();
+    });
+</script>
+
+
+</body>
+</html>
