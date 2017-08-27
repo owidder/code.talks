@@ -1,0 +1,32 @@
+{
+  "name": "code.talks",
+  "version": "1.0.0",
+  "description": "Repo for the \"D3 and physics engine\" talk on code.talks 2017 in Hamburg",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/owidder/code.talks.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/owidder/code.talks/issues"
+  },
+  "homepage": "https://github.com/owidder/code.talks#readme",
+  "devDependencies": {
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1"
+  },
+  "dependencies": {
+    "d3": "^4.10.0",
+    "lodash": "^4.17.4",
+    "matter-js": "^0.13.0"
+  }
+}

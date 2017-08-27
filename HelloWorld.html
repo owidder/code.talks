@@ -7,31 +7,13 @@
     <script src="lib/d3.v4.js"></script>
     <script src="lib/matter.js"></script>
 
-    <script src="js/matterD3Renderer.js"></script>
+    <script src="node_modules/matter-js/build/matter.js"></script>
 </head>
 <body>
 
 <div id="svgcanvas"></div>
 
-<script>
-    /* global Matter */
-
-    function createSvg() {
-        d3.select("#svgcanvas")
-            .attr("width", window.innerWidth)
-            .attr("height", window.innerHeight)
-    }
-
-    const engine = Matter.Engine.create();
-
-    Matter.Engine.run(engine);
-
-    var d3Renderer = new MatterD3Renderer(engine, gStatic, gDynamic);
-    Matter.Events.on(engine, "afterUpdate", function () {
-        d3Renderer.renderD3();
-    });
-</script>
-
+    <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
 
 </body>
 </html>

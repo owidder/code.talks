@@ -2,9 +2,8 @@
 
 /* global Matter */
 
-
-function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
-    var gDynamic = _gDynamic;
+function MatterD3Renderer(_engine, svg, width, height) {
+    var _g = svg;
     var engine = _engine;
 
     function isStatic(body) {
@@ -39,17 +38,13 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         return pathStr;
     }
 
-    function createClassNameFromBody(d, defaultClassName) {
+    function createClassNameFromBody(d) {
         if(d.className != null) {
             return defaultClassName + " " + d.className;
         }
         else {
-            return defaultClassName;
+            return "dynamic";
         }
-    }
-
-    function createClassNameFromBody(d) {
-        return createClassNameFromBody(d, "dynamic");
     }
 
     function renderD3Img() {
@@ -57,7 +52,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
             return b.img != null;
         });
 
-        var data = gDynamic.selectAll("image.dynamic")
+        var data = _g.selectAll("image.dynamic")
             .data(dynamicImg, function (d) {
                 return d.id;
             });
@@ -111,7 +106,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
                 return d.img;
             });
 
-        gDynamic.selectAll("image.dynamic")
+        _g.selectAll("image.dynamic")
             .attr("x", x)
             .attr("y", y)
             .attr("transform", function (d) {
@@ -129,7 +124,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
             return b.img == null;
         });
 
-        var data = gDynamic.selectAll("path.dynamic")
+        var data = _g.selectAll("path.dynamic")
             .data(dynamic, function(d) {
                 return d.id;
             });
@@ -148,7 +143,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
             });
 
 
-        gDynamic.selectAll("path.dynamic")
+        _g.selectAll("path.dynamic")
             .attr("d", createPathFromBody);
 
         data.exit().remove();
@@ -158,7 +153,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
         var bodiesWithTitles = Matter.Composite.allBodies(engine.world).filter(hasTitle);
 
         if(bodiesWithTitles.length > 0) {
-            var data = gDynamic.selectAll("text.dynamic")
+            var data = _g.selectAll("text.dynamic")
                 .data(bodiesWithTitles, function(d) {
                     return d.id;
                 });
@@ -170,7 +165,7 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
                     return d.title;
                 });
 
-            gDynamic.selectAll("text.dynamic")
+            _g.selectAll("text.dynamic")
                 .attr("x", function(d) {
                     var avx = (d.bounds.max.x + d.bounds.min.x) / 2 - 20;
                     return avx;
@@ -183,11 +178,33 @@ function MatterD3Renderer(_engine, _gStatic, _gDynamic) {
 
     }
 
+    this.constructor.prototype.startGc = function(interval) {
+        var that = this;
+
+        function gc() {
+            function isDynamic(body) {
+                return !body.isStatic;
+            }
+            var dynamicBodies = Matter.Composite.allBodies(engine.world).filter(isDynamic);
+            dynamicBodies.forEach(function(body) {
+                if(body.position.y > height) {
+                    Matter.World.remove(engine.world, body);
+                }
+            })
+        }
+
+        return setInterval(gc, interval);
+    };
+
     this.constructor.prototype.renderD3 = function() {
-        if(gDynamic != null) {
+        if(_g != null) {
             renderD3Img();
             renderD3Bodies();
             renderD3Titles();
         }
     }
+}
+
+if(typeof module !== 'undefined') {
+    module.exports = MatterD3Renderer;
 }
