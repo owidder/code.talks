@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>No WebPack</title>
+    <title>Start</title>
 
     <script src="node_modules/d3/build/d3.js"></script>
     <script src="node_modules/matter-js/build/matter.js"></script>
     <script src="node_modules/lodash/lodash.js"></script>
 
     <script src="js/matterD3Renderer.js"></script>
-    <script src="js/histo.js"></script>
 </head>
 <body>
 
@@ -57,6 +56,10 @@
     const data = _.range(0, 100).map(function () {
         return Math.random();
     });
+
+    const histoG = svg.append("g");
+
+    histogram(data, histoG, width, height);
 
     d3Renderer.startGc(1e+4);
 </script>

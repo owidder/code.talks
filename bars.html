@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Start</title>
+
+    <script src="node_modules/d3/build/d3.js"></script>
+    <script src="node_modules/matter-js/build/matter.js"></script>
+    <script src="node_modules/lodash/lodash.js"></script>
+
+    <script src="js/matterD3Renderer.js"></script>
+    <script src="js/d3Bodies.js"></script>
+
+    <style>
+        rect.bar {
+
+        }
+    </style>
+</head>
+<body>
+
+<div id="svgcanvas"></div>
+
+<script>
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const  svg = d3.select("#svgcanvas")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+
+    const dynG = svg.append("g");
+
+    const engine = Matter.Engine.create();
+
+    Matter.Engine.run(engine);
+
+    var d3Renderer = new MatterD3Renderer(engine, dynG, width, height);
+    Matter.Events.on(engine, "afterUpdate", function () {
+        d3Renderer.renderD3();
+    });
+
+    const data = _.range(0, 5).map(function () {
+        return Math.random() * 300;
+    });
+
+    function x(i) {
+        return width/2 + i * (BAR_WIDTH + BAR_GAP);
+    }
+
+    const BAR_WIDTH = 20;
+    const BAR_GAP = 3;
+    const START_HEIGHT = 150;
+    svg.selectAll("rect.bar").data(data).enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("fill", function (___, index) {
+            return colorScale(index);
+        })
+        .attr("width", BAR_WIDTH)
+        .attr("x", function (___, index) {
+            return x(index);
+        })
+        .attr("height", START_HEIGHT)
+        .attr("y", height/2 - START_HEIGHT);
+
+    svg.selectAll("rect.bar")
+        .transition()
+        .duration(2000)
+        .attr("height", function (d) {
+            return d;
+        })
+        .attr("y", function (d) {
+            return height/2 - d;
+        });
+
+    setTimeout(function () {
+        const circles = _.range(0, data.length).map(function (d, i) {
+            return Matter.Bodies.circle(x(i), height/2 + 100 + (100*i), 5, {
+                isStatic: true, color: "grey", doNotShow: true
+            });
+        });
+
+        Matter.World.add(engine.world, circles);
+
+        createBodiesFromRects("bar");
+    }, 5000);
+
+    d3Renderer.startGc(1e+4);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Start</title>
+
+    <script src="node_modules/d3/build/d3.js"></script>
+    <script src="node_modules/matter-js/build/matter.js"></script>
+    <script src="node_modules/lodash/lodash.js"></script>
+
+    <script src="js/matterD3Renderer.js"></script>
+    <script src="js/histo.js"></script>
+</head>
+<body>
+
+<div id="svgcanvas"></div>
+
+<script>
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const  svg = d3.select("#svgcanvas")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+
+    const dynG = svg.append("g");
+
+    const engine = Matter.Engine.create();
+
+    Matter.Engine.run(engine);
+
+    var d3Renderer = new MatterD3Renderer(engine, dynG, width, height);
+    Matter.Events.on(engine, "afterUpdate", function () {
+        d3Renderer.renderD3();
+    });
+
+    function createCircle() {
+        return Matter.Bodies.circle(width/2, height/10, 5, {
+            isStatic: false, color: "blue"
+        });
+    }
+
+    const data = _.range(0, 300000).map(function () {
+        return Math.random();
+    });
+
+    const histoG = svg.append("g");
+
+    histogram(data, histoG, width*0.9, height*0.9);
+
+    d3Renderer.startGc(1e+4);
+</script>
+
+</body>
+</html>

@@ -39,11 +39,12 @@ function MatterD3Renderer(_engine, svg, width, height) {
     }
 
     function createClassNameFromBody(d) {
+        var className = "dynamic";
         if(d.className != null) {
-            return defaultClassName + " " + d.className;
+            return className + " " + d.className;
         }
         else {
-            return "dynamic";
+            return className;
         }
     }
 
@@ -121,7 +122,7 @@ function MatterD3Renderer(_engine, svg, width, height) {
 
     function renderD3Bodies() {
         var dynamic = Matter.Composite.allBodies(engine.world).filter(function (b) {
-            return b.img == null;
+            return (b.img == null && !b.doNotShow);
         });
 
         var data = _g.selectAll("path.dynamic")
