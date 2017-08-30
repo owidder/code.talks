@@ -2,17 +2,8 @@
 
 /* global Matter */
 
-function MatterD3Renderer(_engine, svg, width, height) {
-    var _g = svg;
+function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
     var engine = _engine;
-
-    function isStatic(body) {
-        return body.isStatic;
-    }
-
-    function isDynamic(body) {
-        return !body.isStatic;
-    }
 
     function isCircle(body) {
         return body.label.toLowerCase().startsWith("circle");
@@ -53,7 +44,7 @@ function MatterD3Renderer(_engine, svg, width, height) {
             return b.img != null;
         });
 
-        var data = _g.selectAll("image.dynamic")
+        var data = _gBodies.selectAll("image.dynamic")
             .data(dynamicImg, function (d) {
                 return d.id;
             });
@@ -107,7 +98,7 @@ function MatterD3Renderer(_engine, svg, width, height) {
                 return d.img;
             });
 
-        _g.selectAll("image.dynamic")
+        _gBodies.selectAll("image.dynamic")
             .attr("x", x)
             .attr("y", y)
             .attr("transform", function (d) {
@@ -125,7 +116,7 @@ function MatterD3Renderer(_engine, svg, width, height) {
             return (b.img == null && !b.doNotShow);
         });
 
-        var data = _g.selectAll("path.dynamic")
+        var data = _gBodies.selectAll("path.dynamic")
             .data(dynamic, function(d) {
                 return d.id;
             });
@@ -144,7 +135,7 @@ function MatterD3Renderer(_engine, svg, width, height) {
             });
 
 
-        _g.selectAll("path.dynamic")
+        _gBodies.selectAll("path.dynamic")
             .attr("d", createPathFromBody);
 
         data.exit().remove();
@@ -154,7 +145,7 @@ function MatterD3Renderer(_engine, svg, width, height) {
         var bodiesWithTitles = Matter.Composite.allBodies(engine.world).filter(hasTitle);
 
         if(bodiesWithTitles.length > 0) {
-            var data = _g.selectAll("text.dynamic")
+            var data = _gBodies.selectAll("text.dynamic")
                 .data(bodiesWithTitles, function(d) {
                     return d.id;
                 });
@@ -166,7 +157,7 @@ function MatterD3Renderer(_engine, svg, width, height) {
                     return d.title;
                 });
 
-            _g.selectAll("text.dynamic")
+            _gBodies.selectAll("text.dynamic")
                 .attr("x", function(d) {
                     var avx = (d.bounds.max.x + d.bounds.min.x) / 2 - 20;
                     return avx;
@@ -177,6 +168,41 @@ function MatterD3Renderer(_engine, svg, width, height) {
                 });
         }
 
+    }
+
+    function isVisible(constraint) {
+        return constraint.render && constraint.render.visible;
+    }
+
+    function renderD3Constraints() {
+        var constraints = Matter.Composite.allConstraints(engine.world).filter(isVisible);
+        if(constraints.length > 0) {
+            var data = _gConstraints.selectAll("line.constraint")
+                .data(constraints, function (d) {
+                    return d.id;
+                });
+
+            data.enter()
+                .append("line")
+                .attr("class", "constraint")
+                .style("stroke-width", function (d) {
+                    return d.render.lineWidth + "px;";
+                });
+
+            _gConstraints.selectAll("line.constraint")
+                .attr("x1", function (d) {
+                    return d.bodyA.position.x;
+                })
+                .attr("y1", function (d) {
+                    return d.bodyA.position.y;
+                })
+                .attr("x2", function (d) {
+                    return d.bodyB.position.x;
+                })
+                .attr("y2", function (d) {
+                    return d.bodyB.position.y;
+                });
+        }
     }
 
     this.constructor.prototype.startGc = function(interval) {
@@ -198,10 +224,13 @@ function MatterD3Renderer(_engine, svg, width, height) {
     };
 
     this.constructor.prototype.renderD3 = function() {
-        if(_g != null) {
+        if(_gBodies != null) {
             renderD3Img();
             renderD3Bodies();
             renderD3Titles();
+            if(_gConstraints) {
+                renderD3Constraints();
+            }
         }
     }
 }

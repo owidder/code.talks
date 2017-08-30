@@ -27,6 +27,8 @@
   "dependencies": {
     "d3": "^4.10.0",
     "lodash": "^4.17.4",
+    "material-icons": "^0.1.0",
+    "materialize-css": "^0.100.2",
     "matter-js": "^0.13.0"
   }
 }

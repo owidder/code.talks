@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LesMis Force</title>
+</head>
+
+<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
+<link rel="stylesheet" type="text/css" href="node_modules/material-icons/css/material-icons.css"/>
+
+<script src="node_modules/d3/build/d3.js"></script>
+<script src="node_modules/matter-js/build/matter.js"></script>
+<script src="node_modules/lodash/lodash.js"></script>
+
+<script src="js/drag.js"></script>
+
+<body>
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+
+    text.node {
+        font-size: .5em;
+    }
+
+</style>
+
+<div id="svgcanvas"></div>
+
+<script>
+
+    /* global Drag */
+    /* global d3 */
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    var svg = d3.select("#svgcanvas").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    function drawForce(data) {
+
+    }
+
+    d3.json("lesmis.json", function (err, lesmis) {
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) {
+                return d.id;
+            }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        var drag = new Drag(simulation);
+
+        var link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(lesmis.links)
+            .enter().append("line")
+            .attr("stroke-width", function(d) {
+                return Math.sqrt(d.value);
+            });
+
+        var node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(lesmis.nodes)
+            .enter().append("circle")
+            .attr("r", 5)
+            .attr("fill", function(d) {
+                return color(d.group);
+            })
+            .call(drag.doit());
+
+        var text = svg.append("g")
+            .attr("class", "texts")
+            .selectAll("text")
+            .data(lesmis.nodes)
+            .enter()
+            .append("text")
+            .attr("class", "node")
+            .text(function (d) {
+                return d.id;
+            });
+
+        simulation
+            .nodes(lesmis.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(lesmis.links);
+
+        function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+
+            text
+                .attr("x", function (d) {
+                    return d.x - 20;
+                })
+                .attr("y", function (d) {
+                    return d.y - 10;
+                })
+        }
+
+    });
+
+</script>
+</body>
+</html>
