@@ -26,12 +26,7 @@
         stroke-opacity: 0.6;
     }
 
-    .nodes circle {
-        stroke: #fff;
-        stroke-width: 1.5px;
-    }
-
-    text.node {
+    text.node, text.dynamic {
         font-size: .5em;
     }
 
@@ -42,70 +37,94 @@
 
 </style>
 
+<div class="switch">
+    <label>
+        <input type="checkbox" id="forceMatterSwitch" onchange="handlers.switchChanged()">
+        <span class="lever"></span>
+    </label>
+</div>
+
 <div id="svgcanvas"></div>
 
 <script>
+
+    var handlers = {};
 
     /* global Drag */
     /* global d3 */
     /* global Matter */
 
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-
-    var svg = d3.select("#svgcanvas").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-    var linkG = svg.append("g");
-    var bodyG = svg.append("g");
-
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-    const engine = Matter.Engine.create();
-
-    Matter.Engine.run(engine);
-
-    var d3Renderer = new MatterD3Renderer(engine, bodyG, width, height, linkG);
-    Matter.Events.on(engine, "afterUpdate", function () {
-        d3Renderer.renderD3();
-    });
-
-    engine.world.gravity.x = 0;
-    engine.world.gravity.y = 0;
-
-    function createCircleBodies() {
-        var circleBodies = [];
-        svg.selectAll("circle.node")
-            .each(function (d) {
-                var circleBody = Matter.Bodies.circle(d.x, d.y, 5, {
-                    isStatic: false, color: color(d.group), title: d.id
-                });
-                d.body = circleBody;
-                circleBodies.push(circleBody);
-            });
-        Matter.World.add(engine.world, circleBodies);
-    }
-
-    function createConstraints() {
-        var constraints = [];
-        svg.selectAll("line.node")
-            .each(function (d) {
-                var bodyA = d.source.body;
-                var bodyB = d.target.body;
-                var constraint = Matter.Constraint.create({bodyA: bodyA, bodyB: bodyB, length: 300 / d.value, stiffness: 0.001 / d.value, render: {
-                    lineWidth: 1
-                }});
-                constraints.push(constraint);
-            });
-        Matter.World.add(engine.world, constraints);
-    }
-
-    function startMatter() {
-        createCircleBodies();
-        createConstraints();
-    }
-
     d3.json("lesmis.json", function (err, lesmis) {
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        var svg = d3.select("#svgcanvas").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+        var linkG = svg.append("g");
+        var bodyG = svg.append("g");
+
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        const engine = Matter.Engine.create();
+
+        Matter.Engine.run(engine);
+
+        var d3Renderer = new MatterD3Renderer(engine, bodyG, width, height, linkG);
+        Matter.Events.on(engine, "afterUpdate", function () {
+            d3Renderer.renderD3();
+        });
+
+        engine.world.gravity.x = 0;
+        engine.world.gravity.y = 0;
+
+        function createCircleBodies() {
+            var circleBodies = [];
+            svg.selectAll("circle.node")
+                .each(function (d) {
+                    var circleBody = Matter.Bodies.circle(d.x, d.y, 5, {
+                        isStatic: false, color: color(d.group), title: d.id
+                    });
+                    d.body = circleBody;
+                    circleBodies.push(circleBody);
+                });
+            Matter.World.add(engine.world, circleBodies);
+        }
+
+        function createConstraints() {
+            var constraints = [];
+            svg.selectAll("line.node")
+                .each(function (d) {
+                    var bodyA = d.source.body;
+                    var bodyB = d.target.body;
+                    var constraint = Matter.Constraint.create({bodyA: bodyA, bodyB: bodyB, length: 200 / d.value, stiffness: 0.001, render: {
+                        lineWidth: 1
+                    }});
+                    constraints.push(constraint);
+                });
+            Matter.World.add(engine.world, constraints);
+        }
+
+        function switchChanged() {
+            var checked = document.getElementById("forceMatterSwitch").checked;
+            if(checked) {
+                startMatter();
+            }
+        }
+
+        handlers.switchChanged = switchChanged;
+
+        function startMatter() {
+            createCircleBodies();
+            createConstraints();
+            removeForce();
+        }
+
+        function removeForce() {
+            svg.selectAll("g.force").remove();
+            simulation.stop();
+        }
+
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) {
                 return d.id;
@@ -116,7 +135,7 @@
         var drag = new Drag(simulation);
 
         var link = svg.append("g")
-            .attr("class", "links")
+            .attr("class", "links force")
             .selectAll("line.node")
             .data(lesmis.links)
             .enter().append("line")
@@ -126,7 +145,7 @@
             });
 
         var node = svg.append("g")
-            .attr("class", "nodes")
+            .attr("class", "nodes force")
             .selectAll("circle.node")
             .data(lesmis.nodes)
             .enter().append("circle")
@@ -138,7 +157,7 @@
             .call(drag.doit());
 
         var text = svg.append("g")
-            .attr("class", "texts")
+            .attr("class", "texts force")
             .selectAll("text")
             .data(lesmis.nodes)
             .enter()
@@ -174,10 +193,7 @@
                     return d.y - 10;
                 })
         }
-
     });
-
-    setTimeout(startMatter, 5000);
 
 </script>
 </body>
