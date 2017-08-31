@@ -144,30 +144,29 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
     function renderD3Titles() {
         var bodiesWithTitles = Matter.Composite.allBodies(engine.world).filter(hasTitle);
 
-        if(bodiesWithTitles.length > 0) {
-            var data = _gBodies.selectAll("text.dynamic")
-                .data(bodiesWithTitles, function(d) {
-                    return d.id;
-                });
+        var data = _gBodies.selectAll("text.dynamic")
+            .data(bodiesWithTitles, function(d) {
+                return d.id;
+            });
 
-            data.enter()
-                .append("text")
-                .attr("class", "dynamic")
-                .text(function(d) {
-                    return d.title;
-                });
+        data.enter()
+            .append("text")
+            .attr("class", "dynamic")
+            .text(function(d) {
+                return d.title;
+            });
 
-            _gBodies.selectAll("text.dynamic")
-                .attr("x", function(d) {
-                    var avx = (d.bounds.max.x + d.bounds.min.x) / 2 - 20;
-                    return avx;
-                })
-                .attr("y", function(d) {
-                    var avy = (d.bounds.max.y + d.bounds.min.y) / 2 - 15;
-                    return avy;
-                });
-        }
+        _gBodies.selectAll("text.dynamic")
+            .attr("x", function(d) {
+                var avx = (d.bounds.max.x + d.bounds.min.x) / 2 - 20;
+                return avx;
+            })
+            .attr("y", function(d) {
+                var avy = (d.bounds.max.y + d.bounds.min.y) / 2 - 15;
+                return avy;
+            });
 
+        data.exit().remove();
     }
 
     function isVisible(constraint) {
@@ -176,34 +175,52 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
 
     function renderD3Constraints() {
         var constraints = Matter.Composite.allConstraints(engine.world).filter(isVisible);
-        if(constraints.length > 0) {
-            var data = _gConstraints.selectAll("line.constraint")
-                .data(constraints, function (d) {
-                    return d.id;
-                });
 
-            data.enter()
-                .append("line")
-                .attr("class", "constraint")
-                .style("stroke-width", function (d) {
-                    return d.render.lineWidth + "px;";
-                });
+        var data = _gConstraints.selectAll("line.constraint")
+            .data(constraints, function (d) {
+                return d.id;
+            });
 
-            _gConstraints.selectAll("line.constraint")
-                .attr("x1", function (d) {
-                    return d.bodyA.position.x;
-                })
-                .attr("y1", function (d) {
-                    return d.bodyA.position.y;
-                })
-                .attr("x2", function (d) {
-                    return d.bodyB.position.x;
-                })
-                .attr("y2", function (d) {
-                    return d.bodyB.position.y;
-                });
-        }
+        data.enter()
+            .append("line")
+            .attr("class", "constraint")
+            .style("stroke-width", function (d) {
+                return d.render.lineWidth + "px;";
+            });
+
+        _gConstraints.selectAll("line.constraint")
+            .attr("x1", function (d) {
+                return d.bodyA.position.x;
+            })
+            .attr("y1", function (d) {
+                return d.bodyA.position.y;
+            })
+            .attr("x2", function (d) {
+                return d.bodyB.position.x;
+            })
+            .attr("y2", function (d) {
+                return d.bodyB.position.y;
+            });
+
+        data.exit().remove();
     }
+
+    function deleteConstraints() {
+        Matter.Composite.allConstraints(engine.world).forEach(function (constraint) {
+            Matter.World.remove(engine.world, constraint);
+        })
+    }
+
+    function deleteBodies() {
+        Matter.Composite.allBodies(engine.world).forEach(function (body) {
+            Matter.World.remove(engine.world, body);
+        });
+    }
+
+    this.constructor.prototype.deleteWorld = function () {
+        deleteConstraints();
+        deleteBodies();
+    };
 
     this.constructor.prototype.startGc = function(interval) {
         var that = this;
