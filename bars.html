@@ -44,16 +44,12 @@
         d3Renderer.renderD3();
     });
 
-    const data = _.range(0, 5).map(function () {
-        return Math.random() * 300;
+    const data = _.range(0, 200).map(function () {
+        return Math.random() * 300 + 50;
     });
 
-    function x(i) {
-        return width/2 + i * (BAR_WIDTH + BAR_GAP);
-    }
-
-    const BAR_WIDTH = 20;
-    const BAR_GAP = 3;
+    const BAR_WIDTH = 15;
+    const BAR_GAP = 2;
     const START_HEIGHT = 150;
     svg.selectAll("rect.bar").data(data).enter()
         .append("rect")
@@ -63,7 +59,7 @@
         })
         .attr("width", BAR_WIDTH)
         .attr("x", function (___, index) {
-            return x(index);
+            return index * (BAR_WIDTH + BAR_GAP);
         })
         .attr("height", START_HEIGHT)
         .attr("y", height/2 - START_HEIGHT);
@@ -79,10 +75,16 @@
         });
 
     setTimeout(function () {
-        const circles = _.range(0, data.length).map(function (d, i) {
-            return Matter.Bodies.circle(x(i), height/2 + 100 + (100*i), 5, {
+        const circles = _.range(0, 300).map(function (d, i) {
+            const circle =  Matter.Bodies.circle(width * Math.random(), height/2 + height/2*Math.random(), 5, {
                 isStatic: true, color: "grey", doNotShow: true
             });
+
+            setTimeout(function () {
+                Matter.World.remove(engine.world, circle);
+            }, Math.random() * 10000);
+
+            return circle;
         });
 
         Matter.World.add(engine.world, circles);
