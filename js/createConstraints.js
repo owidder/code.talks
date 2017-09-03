@@ -7,10 +7,10 @@ bottle.factory("createConstraints", function (container) {
     function createConstraint(world, sourceElement, targetElement) {
         var constraint;
         if(targetElement.package == sourceElement.package) {
-            constraint = Matter.Constraint.create({bodyA: sourceElement.body, bodyB: targetElement.body, length: 200, stiffness: 0.001});
+            constraint = Matter.Constraint.create({bodyA: sourceElement.body, bodyB: targetElement.body, length: 10, stiffness: 0.00001});
         }
         else {
-            constraint = Matter.Constraint.create({bodyA: sourceElement.body, bodyB: targetElement.body, length: 700, stiffness: 0.001});
+            constraint = Matter.Constraint.create({bodyA: sourceElement.body, bodyB: targetElement.body, length: 500, stiffness: 0.001});
         }
 
         Matter.World.add(world, [constraint]);
