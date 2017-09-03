@@ -5,13 +5,21 @@
     <title>Bubble</title>
 
     <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
-    <link rel="stylesheet" type="text/css" href="node_modules/material-icons/css/material-icons.css"/>
+    <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
 
     <script src="node_modules/d3/build/d3.js"></script>
+    <script src="node_modules/matter-js/build/matter.js"></script>
+    <script src="node_modules/lodash/lodash.js"></script>
 
 </head>
 <body>
 
+<div class="switch">
+    <label>
+        <input type="checkbox" id="forceMatterSwitch" onchange="switchMatter()">
+        <span class="lever"></span>
+    </label>
+</div>
 <div id="svgcanvas"></div>
 
 <script>
@@ -25,6 +33,84 @@
     var format = d3.format(",d");
 
     var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+    function addCircleBodies() {
+        const circleBodies = [];
+        svg.selectAll("g.node")
+            .each(function (d) {
+                var circleBody = Matter.Bodies.circle(d.x, d.y, d.r, {
+                    isStatic: false
+                });
+                d.body = circleBody;
+                circleBodies.push(circleBody);
+            });
+        Matter.World.add(engine.world, circleBodies);
+    }
+
+    function addBottom() {
+        var rect = Matter.Bodies.rectangle(width/2, height + 50, width, 100, {
+            isStatic: true
+        });
+
+        Matter.World.add(engine.world, [rect]);
+    }
+
+    var engine;
+    var runner;
+
+    function initEngine() {
+        engine = Matter.Engine.create();
+    }
+
+    function startEngine() {
+        runner = Matter.Engine.run(engine);
+        Matter.Events.on(engine, "afterUpdate", function () {
+            tick();
+        });
+    }
+
+    function startMatter() {
+        initEngine();
+        addCircleBodies();
+        addBottom();
+        startEngine();
+    }
+    
+    function tick() {
+        svg.selectAll("g.node")
+            .attr("transform", function(d) {
+                return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
+            });
+    }
+
+    function redrawPack() {
+        setTimeout(function () {
+            svg.selectAll("g.node")
+                .transition()
+                .duration(1000)
+                .attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+        }, 1000);
+    }
+
+    function stopMatter() {
+        Matter.World.clear(engine.world, false, true);
+        Matter.Events.on(engine, "afterTick", function () {
+            Matter.Runner.stop(runner);
+        });
+        redrawPack();
+    }
+
+    function switchMatter() {
+        var checked = document.getElementById("forceMatterSwitch").checked;
+        if(checked) {
+            startMatter();
+        }
+        else {
+            stopMatter();
+        }
+    }
 
     var pack = d3.pack()
         .size([width, height])
@@ -88,7 +174,9 @@
             .attr("dy", ".35em");
 
         node.append("title")
-            .text(function(d) { return d.id + "\n" + format(d.value); });
+            .text(function(d) {
+                return d.id + "\n" + format(d.value);
+            });
     });
 
 </script>
