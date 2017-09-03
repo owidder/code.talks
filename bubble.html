@@ -10,6 +10,11 @@
     <script src="node_modules/d3/build/d3.js"></script>
     <script src="node_modules/matter-js/build/matter.js"></script>
     <script src="node_modules/lodash/lodash.js"></script>
+    <script src="node_modules/bottlejs/dist/bottle.js"></script>
+    <script>const bottle = new Bottle();</script>
+
+    <script src="js/drawBubbles.js"></script>
+    <script src="js/Engine.js"></script>
 
     <style>
         #svgcanvas {
@@ -38,10 +43,6 @@
         .attr("width", width)
         .attr("height", height);
 
-    var format = d3.format(",d");
-
-    var color = d3.scaleOrdinal(d3.schemeCategory20c);
-
     function addCircleBodies() {
         const circleBodies = [];
         svg.selectAll("g.node")
@@ -63,27 +64,8 @@
         Matter.World.add(engine.world, [rect]);
     }
 
-    var engine;
-    var runner;
+    const engine = new bottle.container.Engine();
 
-    function initEngine() {
-        engine = Matter.Engine.create();
-    }
-
-    function startEngine() {
-        runner = Matter.Engine.run(engine);
-        Matter.Events.on(engine, "afterUpdate", function () {
-            tick();
-        });
-    }
-
-    function startMatter() {
-        initEngine();
-        addCircleBodies();
-        addBottom();
-        startEngine();
-    }
-    
     function tick() {
         svg.selectAll("g.node")
             .attr("transform", function(d) {
@@ -102,90 +84,20 @@
         }, 1000);
     }
 
-    function stopMatter() {
-        Matter.World.clear(engine.world, false, true);
-        Matter.Events.on(engine, "afterTick", function () {
-            Matter.Runner.stop(runner);
-        });
-        redrawPack();
-    }
-
     function switchMatter() {
         var checked = document.getElementById("forceMatterSwitch").checked;
         if(checked) {
-            startMatter();
+            engine.start(tick);
+            addCircleBodies();
+            addBottom();
         }
         else {
-            stopMatter();
+            engine.stop();
+            redrawPack();
         }
     }
 
-    var pack = d3.pack()
-        .size([width, height])
-        .padding(1.5);
-    d3.csv("flare.csv", function(d) {
-        d.value = +d.value;
-        if (d.value) return d;
-    }, function(error, classes) {
-        if (error) throw error;
-
-        var root = d3.hierarchy({children: classes})
-            .sum(function(d) { return d.value; })
-            .each(function(d) {
-                if (id = d.data.id) {
-                    var id, i = id.lastIndexOf(".");
-                    d.id = id;
-                    d.package = id.slice(0, i);
-                    d.class = id.slice(i + 1);
-                }
-            });
-
-        var node = svg.selectAll(".node")
-            .data(pack(root).leaves())
-            .enter().append("g")
-            .attr("class", "node")
-            .attr("transform", function(d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
-
-        node.append("circle")
-            .attr("id", function(d) {
-                return d.id;
-            })
-            .attr("r", function(d) {
-                return d.r;
-            })
-            .style("fill", function(d) {
-                return color(d.package);
-            });
-
-        node.append("clipPath")
-            .attr("id", function(d) {
-                return "clip-" + d.id;
-            })
-            .append("use")
-            .attr("xlink:href", function(d) {
-                return "#" + d.id;
-            });
-
-        node.append("text")
-            .attr("clip-path", function(d) { return "url(#clip-" + d.id + ")"; })
-            .text(function (d) {
-                return d.class;
-            })
-            .style("font-size", function (d) {
-                return Math.min(2 * d.r, (2 * d.r - 8) / this.getComputedTextLength() * 16) + "px";
-            })
-            .attr("dx", function (d) {
-                return -d.r;
-            })
-            .attr("dy", ".35em");
-
-        node.append("title")
-            .text(function(d) {
-                return d.id + "\n" + format(d.value);
-            });
-    });
+    bottle.container.drawBubbles(svg, width, height);
 
 </script>
 

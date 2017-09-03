@@ -25,6 +25,7 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
+    "bottlejs": "^1.6.1",
     "d3": "^4.10.0",
     "lodash": "^4.17.4",
     "material-icons": "^0.1.0",
