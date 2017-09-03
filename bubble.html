@@ -11,16 +11,24 @@
     <script src="node_modules/matter-js/build/matter.js"></script>
     <script src="node_modules/lodash/lodash.js"></script>
 
+    <style>
+        #svgcanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+
 </head>
 <body>
 
+<div id="svgcanvas"></div>
 <div class="switch">
     <label>
         <input type="checkbox" id="forceMatterSwitch" onchange="switchMatter()">
         <span class="lever"></span>
     </label>
 </div>
-<div id="svgcanvas"></div>
 
 <script>
     var width = window.innerWidth;
