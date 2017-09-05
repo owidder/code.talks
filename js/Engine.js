@@ -9,9 +9,11 @@ bottle.factory("Engine", function (container) {
         function start(tickFunc) {
             engine = Matter.Engine.create();
             runner = Matter.Engine.run(engine);
-            Matter.Events.on(engine, "afterUpdate", function () {
-                tickFunc();
-            });
+            if(tickFunc) {
+                Matter.Events.on(engine, "afterUpdate", function () {
+                    tickFunc();
+                });
+            }
             this.world = engine.world;
         }
 

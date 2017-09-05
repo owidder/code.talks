@@ -13,9 +13,9 @@
     <script src="node_modules/bottlejs/dist/bottle.js"></script>
     <script>const bottle = new Bottle();</script>
 
-    <script src="js/drawBubbles.js"></script>
+    <script src="js/drawBechdel.js"></script>
     <script src="js/Engine.js"></script>
-    <script src="js/createConstraints.js"></script>
+    <script src="js/createConstraintsToFixPoints.js"></script>
 
     <style>
         #svgcanvas {
@@ -71,7 +71,7 @@
         setTimeout(function () {
             svg.selectAll("g.node")
                 .transition()
-                .duration(1000)
+                .duration(500)
                 .attr("transform", function(d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
@@ -85,9 +85,9 @@
             engine.world.gravity.x = 0;
             engine.world.gravity.y = 0;
             addCircleBodies();
-            bottle.container.createConstraints(engine.world, svg, "g.node", function(sourceElement, targetElement) {
-                return targetElement.package == sourceElement.package;
-            });
+            bottle.container.createConstraintsToFixPoints(engine.world, svg, "g.node", function (element) {
+                return Number(element.data.year) - 2009;
+            }, width, height);
         }
         else {
             engine.stop();
@@ -95,7 +95,7 @@
         }
     }
 
-    bottle.container.drawBubbles(svg, width, height);
+    bottle.container.drawBechdel(svg, width, height);
 
 </script>
 

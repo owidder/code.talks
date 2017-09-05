@@ -13,9 +13,8 @@
     <script src="node_modules/bottlejs/dist/bottle.js"></script>
     <script>const bottle = new Bottle();</script>
 
-    <script src="js/drawBubbles.js"></script>
+    <script src="js/drawBechdel.js"></script>
     <script src="js/Engine.js"></script>
-    <script src="js/createConstraints.js"></script>
 
     <style>
         #svgcanvas {
@@ -57,13 +56,20 @@
         Matter.World.add(engine.world, circleBodies);
     }
 
+    function addBottom() {
+        var rect = Matter.Bodies.rectangle(width/2, height + 50, width, 100, {
+            isStatic: true
+        });
+
+        Matter.World.add(engine.world, [rect]);
+    }
+
     const engine = new bottle.container.Engine();
 
     function tick() {
         svg.selectAll("g.node")
             .attr("transform", function(d) {
-                //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
-                return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
+                return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
             });
     }
 
@@ -82,12 +88,8 @@
         var checked = document.getElementById("forceMatterSwitch").checked;
         if(checked) {
             engine.start(tick);
-            engine.world.gravity.x = 0;
-            engine.world.gravity.y = 0;
             addCircleBodies();
-            bottle.container.createConstraints(engine.world, svg, "g.node", function(sourceElement, targetElement) {
-                return targetElement.package == sourceElement.package;
-            });
+            addBottom();
         }
         else {
             engine.stop();
@@ -95,7 +97,7 @@
         }
     }
 
-    bottle.container.drawBubbles(svg, width, height);
+    bottle.container.drawBechdel(svg, width, height);
 
 </script>
 
