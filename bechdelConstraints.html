@@ -61,6 +61,7 @@
 
     function tick() {
         svg.selectAll("g.node")
+            .transition()
             .attr("transform", function(d) {
                 //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
                 return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
@@ -86,7 +87,7 @@
             engine.world.gravity.y = 0;
             addCircleBodies();
             bottle.container.createConstraintsToFixPoints(engine.world, svg, "g.node", function (element) {
-                return Number(element.data.year) - 2009;
+                return Number(element.data.year.substr(0, 3)) - 197;
             }, width, height);
         }
         else {
@@ -95,7 +96,7 @@
         }
     }
 
-    bottle.container.drawBechdel(svg, width, height);
+    bottle.container.drawBechdel(svg, width, height, .3);
 
 </script>
 

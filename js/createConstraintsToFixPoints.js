@@ -11,7 +11,7 @@ bottle.factory("createConstraintsToFixPoints", function (container) {
         if(index > -1) {
             const point = fixPoint(index, width, height);
             console.log(index + ": " + point.x + " / " + point.y);
-            constraint = Matter.Constraint.create({bodyA: element.body, pointB: point, length:10, stiffness: 0.00001});
+            constraint = Matter.Constraint.create({bodyA: element.body, pointB: point, length:10, stiffness: 0.0005, damping: 0.1});
             Matter.World.add(world, [constraint]);
         }
     }
@@ -27,12 +27,29 @@ bottle.factory("createConstraintsToFixPoints", function (container) {
     }
 
     function fixPoint(i, width, height) {
-        const ix = i % 10;
-        const iy = Math.floor(i / 10);
+        const DENOMINATOR = 5;
+        const leftWidth = width/DENOMINATOR;
+        const rightWidth = (DENOMINATOR-1)*width/DENOMINATOR;
+        const topHeight = height/DENOMINATOR;
+        const bottomHeight = (DENOMINATOR-1)*height/DENOMINATOR;
+        const middleWidth = width/2;
+        const middleHeight = height/2;
+        switch(i) {
+            case 1:
+                return {x: leftWidth, y: topHeight};
 
-        return {
-            x: width / 11 * (ix + 1),
-            y: height / 6 + (iy + 1)
+            case 2:
+                return {x: rightWidth, y: topHeight};
+
+            case 3:
+                return {x: rightWidth, y: bottomHeight};
+
+            case 4:
+                return {x: leftWidth, y: bottomHeight};
+
+            default:
+                return {x: middleWidth, y: middleHeight};
+
         }
     }
 

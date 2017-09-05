@@ -3,7 +3,7 @@
 /* global bottle */
 
 bottle.factory("drawBechdel", function(container) {
-    function drawBubbles(svg, width, height) {
+    function drawBubbles(svg, width, height, quota) {
         var format = d3.format(",d");
 
         var color = d3.scaleOrdinal(d3.schemeCategory20c);
@@ -12,10 +12,10 @@ bottle.factory("drawBechdel", function(container) {
             .size([width, height])
             .padding(1.5);
 
-        d3.csv("bechdelShort.csv", function(d) {
+        d3.csv("bechdel.csv", function(d) {
             d.value = +d.budget;
             d.id = d.imdb;
-            if (d.value) return d;
+            if (d.value && Math.random() < (quota ? quota : 1)) return d;
         }, function(error, movies) {
             if (error) throw error;
 
