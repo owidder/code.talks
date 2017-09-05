@@ -2,22 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bubble</title>
+    <title>Sort with physics</title>
 
     <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
     <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
 
-    <script src="node_modules/jquery/dist/jquery.js"></script>
-    <script src="node_modules/js-url/url.js"></script>
     <script src="node_modules/d3/build/d3.js"></script>
     <script src="node_modules/matter-js/build/matter.js"></script>
     <script src="node_modules/lodash/lodash.js"></script>
     <script src="node_modules/bottlejs/dist/bottle.js"></script>
     <script>const bottle = new Bottle();</script>
 
-    <script src="js/util.js"></script>
     <script src="js/drawBechdelPack.js"></script>
     <script src="js/Engine.js"></script>
+    <script src="js/createConstraintsToFixPoints.js"></script>
 
     <style>
         #svgcanvas {
@@ -25,6 +23,7 @@
             top: 0;
             left: 0;
         }
+
         circle.node {
             opacity: 1;
             stroke: white;
@@ -43,9 +42,6 @@
 </div>
 
 <script>
-
-    var quota = bottle.container.util.getHashParam("q", "100");
-
     var width = window.innerWidth;
     var height = window.innerHeight;
 
@@ -66,20 +62,14 @@
         Matter.World.add(engine.world, circleBodies);
     }
 
-    function addBottom() {
-        var rect = Matter.Bodies.rectangle(width/2, height + 50, width, 100, {
-            isStatic: true
-        });
-
-        Matter.World.add(engine.world, [rect]);
-    }
-
     const engine = new bottle.container.Engine();
 
     function tick() {
         svg.selectAll("g.node")
+            .transition()
             .attr("transform", function(d) {
-                return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
+                //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
+                return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
             });
     }
 
@@ -87,7 +77,7 @@
         setTimeout(function () {
             svg.selectAll("g.node")
                 .transition()
-                .duration(1000)
+                .duration(2000)
                 .attr("transform", function(d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
@@ -98,8 +88,12 @@
         var checked = document.getElementById("forceMatterSwitch").checked;
         if(checked) {
             engine.start(tick);
+            engine.world.gravity.x = 0;
+            engine.world.gravity.y = 0;
             addCircleBodies();
-            addBottom();
+            bottle.container.createConstraintsToFixPoints(engine.world, svg, "g.node", function (element) {
+                return Number(element.data.year.substr(0, 3)) - 197;
+            }, width, height);
         }
         else {
             engine.stop();
@@ -107,7 +101,7 @@
         }
     }
 
-    bottle.container.drawBechdelPack(svg, width, height, Number(quota) / 100);
+    bottle.container.drawBechdelPack(svg, width, height, .3);
 
 </script>
 

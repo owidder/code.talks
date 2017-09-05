@@ -4,14 +4,18 @@
 
 bottle.factory("createConstraintsToFixPoints", function (container) {
 
-    function createConstraint(world, element, indexFunc, width, height) {
+    function createConstraint(world, element, indexFunc, width, height, stiffness, damping) {
+        stiffness = stiffness ? stiffness : 0.0005;
+        damping = damping ? damping : 0.1;
+
         var constraint;
         const i = indexFunc(element);
         const index = indexFunc(element);
+
         if(index > -1) {
             const point = fixPoint(index, width, height);
             console.log(index + ": " + point.x + " / " + point.y);
-            constraint = Matter.Constraint.create({bodyA: element.body, pointB: point, length:10, stiffness: 0.0005, damping: 0.1});
+            constraint = Matter.Constraint.create({bodyA: element.body, pointB: point, length:10, stiffness: stiffness, damping: damping});
             Matter.World.add(world, [constraint]);
         }
     }

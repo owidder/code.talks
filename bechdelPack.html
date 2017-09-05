@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bubble</title>
+    <title>Pack and sort with physics</title>
 
     <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
     <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
@@ -13,7 +13,7 @@
     <script src="node_modules/bottlejs/dist/bottle.js"></script>
     <script>const bottle = new Bottle();</script>
 
-    <script src="js/drawBechdel.js"></script>
+    <script src="js/drawBechdelLines.js"></script>
     <script src="js/Engine.js"></script>
     <script src="js/createConstraintsToFixPoints.js"></script>
 
@@ -22,6 +22,10 @@
             position: absolute;
             top: 0;
             left: 0;
+        }
+        circle.node {
+            opacity: 1;
+            stroke: white;
         }
     </style>
 
@@ -61,7 +65,6 @@
 
     function tick() {
         svg.selectAll("g.node")
-            .transition()
             .attr("transform", function(d) {
                 //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
                 return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
@@ -87,8 +90,8 @@
             engine.world.gravity.y = 0;
             addCircleBodies();
             bottle.container.createConstraintsToFixPoints(engine.world, svg, "g.node", function (element) {
-                return Number(element.data.year.substr(0, 3)) - 197;
-            }, width, height);
+                return 0;
+            }, width, height, 0.1, 0.1);
         }
         else {
             engine.stop();
@@ -96,7 +99,7 @@
         }
     }
 
-    bottle.container.drawBechdel(svg, width, height, .3);
+    bottle.container.drawBechdelLines(svg, width, height, .3);
 
 </script>
 

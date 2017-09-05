@@ -2,7 +2,7 @@
 
 /* global bottle */
 
-bottle.factory("drawBechdel", function(container) {
+bottle.factory("drawBechdelPack", function(container) {
     function drawBubbles(svg, width, height, quota) {
         var format = d3.format(",d");
 
@@ -31,6 +31,7 @@ bottle.factory("drawBechdel", function(container) {
                 });
 
             node.append("circle")
+                .attr("class", "node")
                 .attr("id", function(d) {
                     return d.data.id;
                 })
