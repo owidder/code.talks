@@ -52,6 +52,8 @@
 
     const util = bottle.container.util;
     const Svg = bottle.container.Svg;
+    const Engine = bottle.container.Engine;
+    const drawBechdelPack = bottle.container.drawBechdelPack;
 
     const quota = util.getHashParam("q", "100");
 
@@ -81,7 +83,7 @@
         Matter.World.add(engine.world, [rect]);
     }
 
-    const engine = new bottle.container.Engine();
+    const engine = new Engine();
 
     function tick() {
         g.selectAll("g.node")
@@ -115,7 +117,7 @@
         }
     }
 
-    bottle.container.drawBechdelPack(g, width, height, Number(quota) / 100);
+    drawBechdelPack(g, width, height, Number(quota) / 100);
 
 </script>
 

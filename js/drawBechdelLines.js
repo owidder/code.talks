@@ -35,7 +35,10 @@ bottle.factory("drawBechdelLines", function(container) {
                 });
 
             node.append("circle")
-                .attr("class", "node")
+                .attr("class", "node forlegend")
+                .attr("_legend", function (d) {
+                    return d.data.year + " / " + d.data.title + " / " + format(d.value);
+                })
                 .attr("id", function(d) {
                     return d.data.id;
                 })
@@ -68,11 +71,6 @@ bottle.factory("drawBechdelLines", function(container) {
                     return -d.r;
                 })
                 .attr("dy", ".35em");
-
-            node.append("title")
-                .text(function(d) {
-                    return d.data.year + "\n" + d.data.title + "\n" + format(d.value);
-                });
         });
     }
 
