@@ -6,13 +6,21 @@
 
     <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
     <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+    <link rel="stylesheet" type="text/css" href="css/legend.css">
 
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/js-url/url.js"></script>
     <script src="node_modules/d3/build/d3.js"></script>
     <script src="node_modules/matter-js/build/matter.js"></script>
     <script src="node_modules/lodash/lodash.js"></script>
     <script src="node_modules/bottlejs/dist/bottle.js"></script>
     <script>const bottle = new Bottle();</script>
 
+    <script src="js/util/util.js"></script>
+    <script src="js/util/svgUtil.js"></script>
+
+    <script src="js/legend.js"></script>
+    <script src="js/svg.js"></script>
     <script src="js/drawBechdelPack.js"></script>
     <script src="js/Engine.js"></script>
     <script src="js/createConstraintsToFixPoints.js"></script>
@@ -42,18 +50,21 @@
 </div>
 
 <script>
+    const util = bottle.container.util;
+    const Svg = bottle.container.Svg;
+    const Engine = bottle.container.Engine;
+    const drawBechdelPack = bottle.container.drawBechdelPack;
+
     var width = window.innerWidth;
     var height = window.innerHeight;
 
-    var svg = d3.select("#svgcanvas").append("svg")
-        .attr("width", width)
-        .attr("height", height);
+    const g = (new Svg("#svgcanvas", width*2, height*2)).drawingG;
 
     function addCircleBodies() {
         const circleBodies = [];
-        svg.selectAll("g.node")
+        g.selectAll("g.node")
             .each(function (d) {
-                var circleBody = Matter.Bodies.circle(d.x, d.y, d.r, {
+                var circleBody = Matter.Bodies.circle(d.x, d.y, d.r+4, {
                     isStatic: false
                 });
                 d.body = circleBody;
@@ -62,10 +73,10 @@
         Matter.World.add(engine.world, circleBodies);
     }
 
-    const engine = new bottle.container.Engine();
+    const engine = new Engine();
 
     function tick() {
-        svg.selectAll("g.node")
+        g.selectAll("g.node")
             .transition()
             .attr("transform", function(d) {
                 //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
@@ -75,7 +86,7 @@
 
     function redrawPack() {
         setTimeout(function () {
-            svg.selectAll("g.node")
+            g.selectAll("g.node")
                 .transition()
                 .duration(2000)
                 .attr("transform", function(d) {
@@ -91,7 +102,7 @@
             engine.world.gravity.x = 0;
             engine.world.gravity.y = 0;
             addCircleBodies();
-            bottle.container.createConstraintsToFixPoints(engine.world, svg, "g.node", function (element) {
+            bottle.container.createConstraintsToFixPoints(engine.world, g, "g.node", function (element) {
                 return Number(element.data.year.substr(0, 3)) - 197;
             }, width, height);
         }
@@ -101,7 +112,7 @@
         }
     }
 
-    bottle.container.drawBechdelPack(svg, width, height, .3);
+    drawBechdelPack(g, width, height, .3);
 
 </script>
 
