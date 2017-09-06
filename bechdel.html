@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bubble</title>
+    <title>Bechdel Test</title>
 
     <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
     <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+    <link rel="stylesheet" type="text/css" href="css/legend.css">
 
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script src="node_modules/js-url/url.js"></script>
@@ -15,7 +16,11 @@
     <script src="node_modules/bottlejs/dist/bottle.js"></script>
     <script>const bottle = new Bottle();</script>
 
-    <script src="js/util.js"></script>
+    <script src="js/util/util.js"></script>
+    <script src="js/util/svgUtil.js"></script>
+
+    <script src="js/legend.js"></script>
+    <script src="js/svg.js"></script>
     <script src="js/drawBechdelPack.js"></script>
     <script src="js/Engine.js"></script>
 
@@ -34,6 +39,7 @@
 </head>
 <body>
 
+<h1>Bechdel Test</h1>
 <div id="svgcanvas"></div>
 <div class="switch">
     <label>
@@ -44,18 +50,19 @@
 
 <script>
 
-    var quota = bottle.container.util.getHashParam("q", "100");
+    const util = bottle.container.util;
+    const Svg = bottle.container.Svg;
 
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    const quota = util.getHashParam("q", "100");
 
-    var svg = d3.select("#svgcanvas").append("svg")
-        .attr("width", width)
-        .attr("height", height);
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const g = (new Svg("#svgcanvas", width*2, height*2)).drawingG;
 
     function addCircleBodies() {
         const circleBodies = [];
-        svg.selectAll("g.node")
+        g.selectAll("g.node")
             .each(function (d) {
                 var circleBody = Matter.Bodies.circle(d.x, d.y, d.r, {
                     isStatic: false
@@ -77,15 +84,16 @@
     const engine = new bottle.container.Engine();
 
     function tick() {
-        svg.selectAll("g.node")
+        g.selectAll("g.node")
             .attr("transform", function(d) {
-                return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
+                //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
+                return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
             });
     }
 
     function redrawPack() {
         setTimeout(function () {
-            svg.selectAll("g.node")
+            g.selectAll("g.node")
                 .transition()
                 .duration(1000)
                 .attr("transform", function(d) {
@@ -107,7 +115,7 @@
         }
     }
 
-    bottle.container.drawBechdelPack(svg, width, height, Number(quota) / 100);
+    bottle.container.drawBechdelPack(g, width, height, Number(quota) / 100);
 
 </script>
 

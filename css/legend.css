@@ -1,0 +1,11 @@
+g.legend .textline {
+    font-size: 1em;
+}
+
+g.legend.off {
+    display: none;
+}
+
+g.legend.on {
+    display: block;
+}
