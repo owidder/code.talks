@@ -1,12 +1,11 @@
 'use strict';
 
 /* global bottle */
+/* global d3 */
 
 bottle.factory("drawBechdelPack", function(container) {
-    function drawBubbles(svg, width, height, quota) {
+    function drawBechdelPack(svg, width, height, quota) {
         var format = d3.format(",d");
-
-        var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
         var pack = d3.pack()
             .size([width, height])
@@ -71,5 +70,5 @@ bottle.factory("drawBechdelPack", function(container) {
         });
     }
 
-    return drawBubbles;
+    return drawBechdelPack;
 });

@@ -19,6 +19,8 @@
     <script src="js/util/util.js"></script>
     <script src="js/util/svgUtil.js"></script>
 
+    <script src="js/quantile.js"></script>
+    <script src="js/extractData.js"></script>
     <script src="js/legend.js"></script>
     <script src="js/svg.js"></script>
     <script src="js/drawBechdelPack.js"></script>
@@ -54,6 +56,11 @@
     const Svg = bottle.container.Svg;
     const Engine = bottle.container.Engine;
     const drawBechdelPack = bottle.container.drawBechdelPack;
+    const extractData = bottle.container.extractData;
+    const createConstraintsToFixPoints = bottle.container.createConstraintsToFixPoints;
+    const quantile = bottle.container.quantile;
+
+    const quota = util.getHashParam("q", "30");
 
     var width = window.innerWidth;
     var height = window.innerHeight;
@@ -102,9 +109,10 @@
             engine.world.gravity.x = 0;
             engine.world.gravity.y = 0;
             addCircleBodies();
-            bottle.container.createConstraintsToFixPoints(engine.world, g, "g.node", function (element) {
+            const data = extractData(g, "g.node");
+            createConstraintsToFixPoints(engine.world, data, function (element) {
                 return Number(element.data.year.substr(0, 3)) - 197;
-            }, width, height);
+            }, width, height, 0.001);
         }
         else {
             engine.stop();
@@ -112,7 +120,7 @@
         }
     }
 
-    drawBechdelPack(g, width, height, .3);
+    drawBechdelPack(g, width, height, Number(quota) / 100);
 
 </script>
 
