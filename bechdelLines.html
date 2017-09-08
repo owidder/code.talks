@@ -22,7 +22,7 @@
     <script src="js/extractData.js"></script>
     <script src="js/legend.js"></script>
     <script src="js/svg.js"></script>
-    <script src="js/drawBechdelLines.js"></script>
+    <script src="js/drawBechdelPack.js"></script>
     <script src="js/Engine.js"></script>
     <script src="js/constraints.js"></script>
 
@@ -53,7 +53,7 @@
     const util = bottle.container.util;
     const Svg = bottle.container.Svg;
     const Engine = bottle.container.Engine;
-    const drawBechdelLines = bottle.container.drawBechdelLines;
+    const drawBechdelPack = bottle.container.drawBechdelPack;
     const extractData = bottle.container.extractData;
     const createConstraint = bottle.container.constraints.createConstraint;
 
@@ -66,7 +66,7 @@
     function addBodiesRecursive(data, index) {
         setTimeout(function () {
             const d = data[index];
-            const circleBody = Matter.Bodies.circle(Math.random() * width, -200, d.r+4, {
+            const circleBody = Matter.Bodies.circle(d.outerX, d.outerY, d.r, {
                 isStatic: false
             });
             d.body = circleBody;
@@ -111,19 +111,25 @@
         }, 1000);
     }
 
+    function prepare(duration) {
+        g.selectAll("g.node")
+            .transition()
+            .duration(duration)
+            .attr("transform", function (d) {
+                d.outerX = Math.random() < 0.5 ? Math.random() * 100 - 300 : Math.random() * 100 + width + 300;
+                d.outerY = Math.random() < 0.5 ? Math.random() * 100 - 300 : Math.random() * 100 + height + 300;
+                return "translate(" + d.outerX + "," + d.outerY + ")";
+            })
+    }
+
     function switchMatter() {
         var checked = document.getElementById("forceMatterSwitch").checked;
         if(checked) {
             engine.start(tick);
             engine.world.gravity.x = 0;
             engine.world.gravity.y = 0;
-            addCircleBodies();
-/*
-            const data = extractData(g, "g.node");
-            createConstraintsToFixPoints(engine.world, data, function (element) {
-                return 4;
-            }, width, height, 0.000005, 0.001);
-*/
+            prepare(3000);
+            setTimeout(addCircleBodies, 4000);
         }
         else {
             engine.stop();
@@ -131,7 +137,7 @@
         }
     }
 
-    drawBechdelLines(g, width, height, Number(quota) / 100);
+    drawBechdelPack(g, width, height, Number(quota) / 100);
 
 </script>
 
