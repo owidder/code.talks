@@ -19,6 +19,7 @@
     <script src="js/util/util.js"></script>
     <script src="js/util/svgUtil.js"></script>
 
+    <script src="js/quantile.js"></script>
     <script src="js/extractData.js"></script>
     <script src="js/legend.js"></script>
     <script src="js/svg.js"></script>
@@ -56,6 +57,7 @@
     const drawBechdelPack = bottle.container.drawBechdelPack;
     const extractData = bottle.container.extractData;
     const createConstraint = bottle.container.constraints.createConstraint;
+    const quantile = bottle.container.quantile;
 
     const quota = util.getHashParam("q", "30");
     var width = window.innerWidth;
@@ -72,7 +74,7 @@
         Matter.World.add(engine.world, [newBody]);
     }
 
-    function addBodiesRecursive(data, index) {
+    function addBodiesRecursive(data, categoryFunc, index) {
         setTimeout(function () {
             const d = data[index];
             const circleBody = Matter.Bodies.circle(d.outerX, d.outerY, d.r+2, {
@@ -80,24 +82,28 @@
             });
             d.body = circleBody;
             Matter.World.add(engine.world, [circleBody]);
-            const constraint = createConstraint(engine.world, circleBody, function ()  {return 4;}, width, height, 0.0001, 0.001);
+            const constraint = createConstraint(engine.world, d, categoryFunc, width, height, 0.00001, 0.001);
             d.constraint = constraint;
             if(index < data.length-1) {
-                addBodiesRecursive(data, index+1);
+                addBodiesRecursive(data, categoryFunc, index+1);
             }
+/*
             setTimeout(function () {
                 switchToStatic(d);
             }, 20000);
-        }, 100);
+*/
+        }, 1000);
     }
 
     function addCircleBodies() {
-        const data = [];
-        g.selectAll("g.node")
-            .each(function (d) {
-                data.push(d);
-            });
-        addBodiesRecursive(data, 0);
+        const data = extractData(g, "g.node");
+        const budgetQuantile = quantile(data, function (element) {
+            return Number(element.data.budget);
+        });
+        const categoryFunc = function (element) {
+            return budgetQuantile(Number(element.data.budget));
+        };
+        addBodiesRecursive(data, categoryFunc, 0);
     }
 
     const engine = new Engine();

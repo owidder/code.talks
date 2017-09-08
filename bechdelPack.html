@@ -80,15 +80,15 @@
             });
             d.body = circleBody;
             Matter.World.add(engine.world, [circleBody]);
-            const constraint = createConstraint(engine.world, circleBody, function ()  {return 4;}, width, height, 0.0001, 0.001);
+            const constraint = createConstraint(engine.world, d, function ()  {return 4;}, width, height, 0.0001, 0.001);
             d.constraint = constraint;
             if(index < data.length-1) {
                 addBodiesRecursive(data, index+1);
             }
             setTimeout(function () {
                 switchToStatic(d);
-            }, 20000);
-        }, 100);
+            }, 15000);
+        }, 10);
     }
 
     function addCircleBodies() {

@@ -7,19 +7,19 @@ bottle.factory("constraints", function (container) {
 
     function createConstraintsToFixPoints(world, data, categoryFunc, width, height, stiffness, damping) {
         data.forEach(function (element) {
-            createConstraint(world, element.body, categoryFunc, width, height, stiffness, damping);
+            createConstraint(world, element, categoryFunc, width, height, stiffness, damping);
         });
     }
 
-    function createConstraint(world, body, categoryFunc, width, height, stiffness, damping) {
+    function createConstraint(world, element, categoryFunc, width, height, stiffness, damping) {
         stiffness = stiffness ? stiffness : 0.0005;
         damping = damping ? damping : 0.1;
 
-        const category = categoryFunc(body);
+        const category = categoryFunc(element);
 
         if(category > -1) {
             const point = fixPoint(category, width, height);
-            const constraint = Matter.Constraint.create({bodyA: body, pointB: point, length:10, stiffness: stiffness, damping: damping});
+            const constraint = Matter.Constraint.create({bodyA: element.body, pointB: point, length:10, stiffness: stiffness, damping: damping});
             Matter.World.add(world, [constraint]);
 
             return constraint;
