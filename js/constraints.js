@@ -21,7 +21,11 @@ bottle.factory("constraints", function (container) {
             const point = fixPoint(category, width, height);
             const constraint = Matter.Constraint.create({bodyA: body, pointB: point, length:10, stiffness: stiffness, damping: damping});
             Matter.World.add(world, [constraint]);
+
+            return constraint;
         }
+
+        return null;
     }
 
     function fixPoint(category, width, height) {
