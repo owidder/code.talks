@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bechdel Test</title>
+    <title>Sort with physics</title>
 
     <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
     <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
@@ -19,9 +19,11 @@
     <script src="js/util/util.js"></script>
     <script src="js/util/svgUtil.js"></script>
 
+    <script src="js/quantile.js"></script>
+    <script src="js/extractData.js"></script>
     <script src="js/legend.js"></script>
     <script src="js/svg.js"></script>
-    <script src="js/drawBechdelLines.js"></script>
+    <script src="js/drawBechdelPack.js"></script>
     <script src="js/Engine.js"></script>
     <script src="js/createConstraintsToFixPoints.js"></script>
 
@@ -31,6 +33,7 @@
             top: 0;
             left: 0;
         }
+
         circle.node {
             opacity: 1;
             stroke: white;
@@ -52,9 +55,13 @@
     const util = bottle.container.util;
     const Svg = bottle.container.Svg;
     const Engine = bottle.container.Engine;
-    const drawBechdelLines = bottle.container.drawBechdelLines;
+    const drawBechdelPack = bottle.container.drawBechdelPack;
+    const extractData = bottle.container.extractData;
+    const createConstraintsToFixPoints = bottle.container.createConstraintsToFixPoints;
+    const quantile = bottle.container.quantile;
 
     const quota = util.getHashParam("q", "30");
+
     var width = window.innerWidth;
     var height = window.innerHeight;
 
@@ -64,9 +71,11 @@
         const circleBodies = [];
         g.selectAll("g.node")
             .each(function (d) {
-                var circleBody = Matter.Bodies.circle(d.x, d.y, d.r+4, {
+                var circleBody = Matter.Bodies.circle(d.x, d.y, 1, {
                     isStatic: false
                 });
+                //Matter.Body.setDensity(circleBody, 0.001/(d.r*1000));
+                Matter.Body.setMass(circleBody, 1);
                 d.body = circleBody;
                 circleBodies.push(circleBody);
             });
@@ -77,21 +86,45 @@
 
     function tick() {
         g.selectAll("g.node")
+            //.transition()
             .attr("transform", function(d) {
                 //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
                 return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
             });
     }
 
+    function createConstraints() {
+        const data = extractData(g, "g.node");
+        const budgetQuantile = quantile(data, function (element) {
+            return Number(element.data.budget);
+        });
+        createConstraintsToFixPoints(engine.world, data, function (element) {
+            return budgetQuantile(Number(element.data.budget));
+        }, width, height, 0.001);
+    }
+
     function redrawPack() {
         setTimeout(function () {
             g.selectAll("g.node")
                 .transition()
-                .duration(500)
+                .duration(2000)
                 .attr("transform", function(d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
         }, 1000);
+    }
+
+    function setRadius() {
+        g.selectAll("g.node")
+            .each(function (d, i) {
+                Matter.World.remove(engine.world, d.body);
+                const newBody = Matter.Bodies.circle(d.body.position.x, d.body.position.y, d.r+4, {
+                    isStatic: false
+                });
+                Matter.World.add(engine.world, [newBody]);
+                d.body = newBody;
+            });
+        //setTimeout(createConstraints, 5000);
     }
 
     function switchMatter() {
@@ -101,9 +134,8 @@
             engine.world.gravity.x = 0;
             engine.world.gravity.y = 0;
             addCircleBodies();
-            bottle.container.createConstraintsToFixPoints(engine.world, g, "g.node", function (element) {
-                return 0;
-            }, width, height, 0.2, 0.1);
+            createConstraints();
+            setTimeout(setRadius, 5000);
         }
         else {
             engine.stop();
@@ -111,7 +143,7 @@
         }
     }
 
-    drawBechdelLines(g, width, height, Number(quota) / 100);
+    drawBechdelPack(g, width, height, Number(quota) / 100);
 
 </script>
 

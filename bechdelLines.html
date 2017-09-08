@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bechdel Test</title>
+
+    <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
+    <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+    <link rel="stylesheet" type="text/css" href="css/legend.css">
+
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/js-url/url.js"></script>
+    <script src="node_modules/d3/build/d3.js"></script>
+    <script src="node_modules/matter-js/build/matter.js"></script>
+    <script src="node_modules/lodash/lodash.js"></script>
+    <script src="node_modules/bottlejs/dist/bottle.js"></script>
+    <script>const bottle = new Bottle();</script>
+
+    <script src="js/util/util.js"></script>
+    <script src="js/util/svgUtil.js"></script>
+
+    <script src="js/extractData.js"></script>
+    <script src="js/legend.js"></script>
+    <script src="js/svg.js"></script>
+    <script src="js/drawBechdelLines.js"></script>
+    <script src="js/Engine.js"></script>
+    <script src="js/constraints.js"></script>
+
+    <style>
+        #svgcanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        circle.node {
+            opacity: 1;
+            stroke: white;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="svgcanvas"></div>
+<div class="switch">
+    <label>
+        <input type="checkbox" id="forceMatterSwitch" onchange="switchMatter()">
+        <span class="lever"></span>
+    </label>
+</div>
+
+<script>
+    const util = bottle.container.util;
+    const Svg = bottle.container.Svg;
+    const Engine = bottle.container.Engine;
+    const drawBechdelLines = bottle.container.drawBechdelLines;
+    const extractData = bottle.container.extractData;
+    const createConstraint = bottle.container.constraints.createConstraint;
+
+    const quota = util.getHashParam("q", "30");
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    const g = (new Svg("#svgcanvas", width*2, height*2)).drawingG;
+
+    function addBodiesRecursive(data, index) {
+        setTimeout(function () {
+            const d = data[index];
+            const circleBody = Matter.Bodies.circle(Math.random() * width, -200, d.r+4, {
+                isStatic: false
+            });
+            d.body = circleBody;
+            Matter.World.add(engine.world, [circleBody]);
+            createConstraint(engine.world, circleBody, function ()  {return 4;}, width, height, 0.0001, 0.001);
+            if(index < data.length-1) {
+                addBodiesRecursive(data, index+1);
+            }
+        }, 100);
+    }
+
+    function addCircleBodies() {
+        const data = [];
+        g.selectAll("g.node")
+            .each(function (d) {
+                data.push(d);
+            });
+        addBodiesRecursive(data, 0);
+    }
+
+    const engine = new Engine();
+
+    function tick() {
+        g.selectAll("g.node")
+            .filter(function (d) {
+                return d.body;
+            })
+            .attr("transform", function(d) {
+                //return "translate(" + d.body.position.x + "," + d.body.position.y + ") rotate(" + (d.body.angle / 2*Math.PI * 360) + ")";
+                return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
+            });
+    }
+
+    function redrawPack() {
+        setTimeout(function () {
+            g.selectAll("g.node")
+                .transition()
+                .duration(500)
+                .attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+        }, 1000);
+    }
+
+    function switchMatter() {
+        var checked = document.getElementById("forceMatterSwitch").checked;
+        if(checked) {
+            engine.start(tick);
+            engine.world.gravity.x = 0;
+            engine.world.gravity.y = 0;
+            addCircleBodies();
+/*
+            const data = extractData(g, "g.node");
+            createConstraintsToFixPoints(engine.world, data, function (element) {
+                return 4;
+            }, width, height, 0.000005, 0.001);
+*/
+        }
+        else {
+            engine.stop();
+            redrawPack();
+        }
+    }
+
+    drawBechdelLines(g, width, height, Number(quota) / 100);
+
+</script>
+
+</body>
+</html>
