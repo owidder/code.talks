@@ -124,26 +124,18 @@
         }, 1000);
     }
 
-    function outer(max) {
-        return Math.random() < 0.5 ? Math.random() * 100 - 300 : Math.random() * 100 + max + 300;
-    }
-
-    function inner(max) {
-        return Math.random() * max;
-    }
-
     function prepare(duration) {
         g.selectAll("g.node")
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
                 if(Math.random() < 0.5) {
-                    d.outerX = outer(width);
-                    d.outerY = inner(height);
+                    d.outerX = Math.random() < 0.5 ? -d.x : width + d.x;
+                    d.outerY = Math.random()*height;
                 }
                 else {
-                    d.outerX = inner(width);
-                    d.outerY = outer(height);
+                    d.outerX = Math.random()*width;
+                    d.outerY = Math.random() < 0.5 ? -d.y : height + d.y;
                 }
                 return "translate(" + d.outerX + "," + d.outerY + ")";
             })
