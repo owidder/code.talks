@@ -50,6 +50,10 @@
 </div>
 
 <script>
+
+    /* global _ */
+    /* global d3 */
+
     const util = bottle.container.util;
     const Svg = bottle.container.Svg;
     const Engine = bottle.container.Engine;
@@ -57,7 +61,7 @@
     const extractData = bottle.container.extractData;
     const createConstraint = bottle.container.constraints.createConstraint;
 
-    const quota = util.getHashParam("q", "30");
+    const quota = util.getHashParam("q", "100");
     var width = window.innerWidth;
     var height = window.innerHeight;
 
@@ -80,7 +84,7 @@
             });
             d.body = circleBody;
             Matter.World.add(engine.world, [circleBody]);
-            const constraint = createConstraint(engine.world, d, function ()  {return 4;}, width, height, 0.0001, 0.001);
+            const constraint = createConstraint(engine.world, d, function ()  {return 4;}, width, height, 0.00005, 0.001);
             d.constraint = constraint;
             if(index < data.length-1) {
                 addBodiesRecursive(data, index+1);
@@ -97,7 +101,10 @@
             .each(function (d) {
                 data.push(d);
             });
-        addBodiesRecursive(data, 0);
+        const sortedData = _.orderBy(data, function (element) {
+            return element.data.year;
+        });
+        addBodiesRecursive(sortedData, 0);
     }
 
     const engine = new Engine();
@@ -130,12 +137,12 @@
             .duration(duration)
             .attr("transform", function (d) {
                 if(Math.random() < 0.5) {
-                    d.outerX = Math.random() < 0.5 ? -d.x : width + d.x;
+                    d.outerX = Math.random() < 0.5 ? -100 : width + 100;
                     d.outerY = Math.random()*height;
                 }
                 else {
                     d.outerX = Math.random()*width;
-                    d.outerY = Math.random() < 0.5 ? -d.y : height + d.y;
+                    d.outerY = Math.random() < 0.5 ? -100 : height + 100;
                 }
                 return "translate(" + d.outerX + "," + d.outerY + ")";
             })
