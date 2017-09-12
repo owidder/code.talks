@@ -104,6 +104,10 @@
             .attr("class", "bar")
             .text(function (d) {
                 return d.name;
+            })
+            .attr("transform", function (d) {
+                var x = _x(data.indexOf(d));
+                return "translate(" + x + ",510) rotate(90)";
             });
 
         /////////////////////////////////
@@ -125,6 +129,8 @@
             });
 
         d3.selectAll("text.bar")
+            .transition()
+            .duration(1000)
             .attr("transform", function (d) {
                 var x = _x(data.indexOf(d));
                 return "translate(" + x + ",510) rotate(90)";
@@ -168,7 +174,7 @@
             else {
                 ctr++;
             }
-            drawBars(timeSeries[ctr]);
+            drawBars(_.orderBy(timeSeries[ctr], ['grade'], ['desc']));
         }
 
         function prev() {
@@ -178,7 +184,7 @@
             else {
                 ctr--;
             }
-            drawBars(timeSeries[ctr]);
+            drawBars(_.orderBy(timeSeries[ctr], ['grade'], ['desc']));
         }
 
         next();
