@@ -9,6 +9,7 @@
 <script src="node_modules/lodash/lodash.js"></script>
 <script src="node_modules/bottlejs/dist/bottle.js"></script>
 <script>const bottle = new Bottle();</script>
+<script src="node_modules/matter-js/build/matter.js"></script>
 
 <script src="js/util/util.js"></script>
 <script src="js/util/svgUtil.js"></script>
@@ -16,6 +17,7 @@
 <script src="js/legend.js"></script>
 <script src="js/svg.js"></script>
 <script src="js/bo.js"></script>
+<script src="js/Engine.js"></script>
 
 <style>
 
@@ -52,6 +54,7 @@
 
     const Svg = bottle.container.Svg;
     const Bo = bottle.container.Bo;
+    const Engine = bottle.container.Engine;
 
     var width = window.innerWidth;
     var height = window.innerHeight;
@@ -133,16 +136,22 @@
             .transition()
             .duration(1000)
             .attr("x", function (d) {
-                return _x(data.indexOf(d));
+                const x = _x(data.indexOf(d));
+                d.x = x;
+                return x;
             })
             .attr("_legend", function (d) {
                 return d.title + ": " + d3.format(",d")(d.wg);
             })
             .attr("height", function(d) {
-                return _height(d.wg);
+                const height = _height(d.wg);
+                d.height = height;
+                return height;
             })
             .attr("y", function (d) {
-                return BAR_OFFSET_Y - _height(d.wg);
+                const y = BAR_OFFSET_Y - _height(d.wg);
+                d.y = y;
+                return y;
             });
 
         // text
@@ -158,14 +167,57 @@
         // EXIT
         /////////////////////////////////
 
-        rectSelectionWithData.exit().remove();
+        rectSelectionWithData.exit()
+            .each(function (d) {
+                const x = d.x + BAR_WIDTH/2;
+                const y = d.y + d.height/2;
+                const rectBody = Matter.Bodies.rectangle(x, y, BAR_WIDTH, d.height, {
+                    isStatic: false, __data: d
+                });
+                Matter.World.add(engine.world, [rectBody]);
+            })
+            .remove();
 
         textSelectionWithData.exit().remove();
+    }
+
+    const engine = new Engine();
+
+    function drawMatter() {
+        const bodies = Matter.Composite.allBodies(engine.world);
+
+        const selectData = d3.selectAll("g.matter").data(bodies, function(d) {
+            return d.id;
+        });
+
+        const enterG = selectData.enter()
+            .append("g")
+            .attr("class", "matter");
+
+        enterG.append("rect")
+            .attr("width", BAR_WIDTH)
+            .attr("height", function(d) {
+                return d.__data.height;
+            })
+            .style("fill", function (d) {
+                return color(d.__data.title);
+            });
+
+        d3.selectAll("g.matter")
+            .attr("transform", function (d) {
+                const x = d.position.x - BAR_WIDTH/2;
+                const y = d.position.y - d.__data.height/2;
+                return "translate(" + x + "," + y + ") rotate(" + (d.angle / 2*Math.PI * 360) + ")";
+            });
+
+        selectData.exit().remove();
     }
 
     const bo = new Bo(drawBars, 5);
     bo.ready.then(function () {
         bo.next();
+
+        engine.start(drawMatter);
     });
 
 </script>

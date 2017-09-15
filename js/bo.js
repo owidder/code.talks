@@ -2,11 +2,12 @@
 
 /* global botlle */
 /* global d3 */
+/* global _ */
 
 bottle.factory("Bo", function (container) {
     const SimplePromise = container.SimplePromise;
 
-    function Bo(drawFunc) {
+    function Bo(drawFunc, count) {
         const that = this;
         const ready = new SimplePromise();
         var timeSeries;
@@ -15,7 +16,9 @@ bottle.factory("Bo", function (container) {
             const readFinished = new SimplePromise();
 
             d3.json("bo.json", function (data) {
-                timeSeries = bo;
+                timeSeries = _.orderBy(data, function (week) {
+                    return week[0].date
+                }, ['asc']);
                 readFinished.resolve();
             });
 
@@ -31,7 +34,7 @@ bottle.factory("Bo", function (container) {
             else {
                 ctr++;
             }
-            drawFunc(_.orderBy(timeSeries[ctr], ['grade'], ['desc']));
+            drawFunc(_.orderBy(timeSeries[ctr].slice(0,count), ['wg'], ['desc']));
         }
 
         function prev() {
@@ -41,7 +44,7 @@ bottle.factory("Bo", function (container) {
             else {
                 ctr--;
             }
-            drawFunc(_.orderBy(timeSeries[ctr], ['grade'], ['desc']));
+            drawFunc(_.orderBy(timeSeries[ctr].slice(0, count), ['wg'], ['desc']));
         }
 
         read().then(function() {
