@@ -27,6 +27,20 @@ bottle.factory("Bo", function (container) {
 
         var ctr = -1;
 
+        function addI(elements) {
+            return elements.map(function (element, i) {
+                const newElement = Object.assign({}, element);
+                newElement.i = i;
+                return newElement;
+            });
+        }
+
+        function callDrawFunc() {
+            const ordered = timeSeries[ctr].slice(0,count);
+            const orderedWithI = addI(ordered);
+            drawFunc(_.orderBy(orderedWithI, ['wg'], ['desc']));
+        }
+
         function next() {
             if(ctr < 0 || ctr >= timeSeries.length-1) {
                 ctr = 0;
@@ -34,7 +48,7 @@ bottle.factory("Bo", function (container) {
             else {
                 ctr++;
             }
-            drawFunc(_.orderBy(timeSeries[ctr].slice(0,count), ['wg'], ['desc']));
+            callDrawFunc();
         }
 
         function prev() {
@@ -44,7 +58,7 @@ bottle.factory("Bo", function (container) {
             else {
                 ctr--;
             }
-            drawFunc(_.orderBy(timeSeries[ctr].slice(0, count), ['wg'], ['desc']));
+            callDrawFunc();
         }
 
         read().then(function() {

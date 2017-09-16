@@ -107,7 +107,7 @@
                 return color(d.title);
             })
             .attr("x", function (d) {
-                return _x(data.indexOf(d));
+                return _x(d.i);
             })
             .attr("height", START_HEIGHT)
             .attr("y", BAR_OFFSET_Y - START_HEIGHT);
@@ -120,7 +120,7 @@
                 return d.title;
             })
             .attr("transform", function (d) {
-                var x = _x(data.indexOf(d)) + BAR_WIDTH/2;
+                var x = _x(d.i) + BAR_WIDTH/2;
                 return textTranslate(x);
             });
 
@@ -133,7 +133,7 @@
             .transition()
             .duration(1000)
             .attr("x", function (d) {
-                return _x(data.indexOf(d));
+                return _x(d.i);
             })
             .attr("_legend", function (d) {
                 return d.title + ": " + d3.format(",d")(d.wg);
@@ -150,7 +150,7 @@
             .transition()
             .duration(1000)
             .attr("transform", function (d) {
-                var x = _x(data.indexOf(d)) + BAR_WIDTH/2;
+                var x = _x(d.i) + BAR_WIDTH/2;
                 return textTranslate(x);
             });
 

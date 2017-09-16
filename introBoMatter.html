@@ -27,13 +27,13 @@
         left: 0;
     }
 
-    rect.bar {
+    rect.bar, g.matter rect {
         opacity: .8;
         stroke: black;
         stroke-width: 2px;
     }
 
-    text.bar {
+    text.bar, g.matter text {
         font-size: 2em;
         opacity: .5;
         font-weight: bolder;
@@ -75,8 +75,8 @@
         return index * (BAR_WIDTH + BAR_GAP) + BAR_OFFSET_X;
     }
 
-    function textTranslate(x) {
-        return "translate(" + x + "," + (BAR_OFFSET_Y - 10) + ") rotate(270)";
+    function textTranslate(x, y) {
+        return "translate(" + x + "," + y + ") rotate(270)";
     }
 
     function drawBars(data) {
@@ -110,7 +110,7 @@
                 return color(d.title);
             })
             .attr("x", function (d) {
-                return _x(data.indexOf(d));
+                return _x(d.i);
             })
             .attr("height", START_HEIGHT)
             .attr("y", BAR_OFFSET_Y - START_HEIGHT);
@@ -123,8 +123,8 @@
                 return d.title;
             })
             .attr("transform", function (d) {
-                var x = _x(data.indexOf(d)) + BAR_WIDTH/2;
-                return textTranslate(x);
+                var x = _x(d.i) + BAR_WIDTH/2;
+                return textTranslate(x, BAR_OFFSET_Y - 10);
             });
 
         /////////////////////////////////
@@ -136,7 +136,7 @@
             .transition()
             .duration(1000)
             .attr("x", function (d) {
-                const x = _x(data.indexOf(d));
+                const x = _x(d.i);
                 d.x = x;
                 return x;
             })
@@ -159,8 +159,8 @@
             .transition()
             .duration(1000)
             .attr("transform", function (d) {
-                var x = _x(data.indexOf(d)) + BAR_WIDTH/2;
-                return textTranslate(x);
+                var x = _x(d.i) + BAR_WIDTH/2;
+                return textTranslate(x, BAR_OFFSET_Y - 10);
             });
 
         /////////////////////////////////
@@ -169,12 +169,18 @@
 
         rectSelectionWithData.exit()
             .each(function (d) {
-                const x = d.x + BAR_WIDTH/2;
-                const y = d.y + d.height/2;
+                const x = _x(d.i) + BAR_WIDTH/2;
+                const y = BAR_OFFSET_Y - _height(d.wg) + d.height/2;
                 const rectBody = Matter.Bodies.rectangle(x, y, BAR_WIDTH, d.height, {
                     isStatic: false, __data: d
                 });
+                const circleBody = Matter.Bodies.circle(x + BAR_WIDTH/3, y + height/4, 10, {
+                    isStatic: true
+                });
                 Matter.World.add(engine.world, [rectBody]);
+                setTimeout(function () {
+                    Matter.World.remove(engine.world, circleBody);
+                }, 3000);
             })
             .remove();
 
@@ -183,10 +189,20 @@
 
     const engine = new Engine();
 
-    function drawMatter() {
-        const bodies = Matter.Composite.allBodies(engine.world);
+    function addBottom() {
+        var rect = Matter.Bodies.rectangle(width/2, height + 50, width, 100, {
+            isStatic: true
+        });
 
-        const selectData = d3.selectAll("g.matter").data(bodies, function(d) {
+        Matter.World.add(engine.world, [rect]);
+    }
+
+    function drawMatter() {
+        const dynamicBodies = Matter.Composite.allBodies(engine.world).filter(function (b) {
+            return (b.isStatic == false);
+        });
+
+        const selectData = g.selectAll("g.matter").data(dynamicBodies, function(d) {
             return d.id;
         });
 
@@ -203,11 +219,23 @@
                 return color(d.__data.title);
             });
 
-        d3.selectAll("g.matter")
+        enterG.append("text")
+            .text(function (d) {
+                return d.__data.title;
+            })
             .attr("transform", function (d) {
-                const x = d.position.x - BAR_WIDTH/2;
-                const y = d.position.y - d.__data.height/2;
-                return "translate(" + x + "," + y + ") rotate(" + (d.angle / 2*Math.PI * 360) + ")";
+                var x = BAR_WIDTH/2;
+                return textTranslate(x, -10);
+            });
+
+
+        g.selectAll("g.matter")
+            .attr("transform", function (d) {
+                const cOffsetX = BAR_WIDTH/2;
+                const cOffsetY = d.__data.height/2;
+                const x = d.position.x - cOffsetX;
+                const y = d.position.y - cOffsetY;
+                return "translate(" + x + "," + y + ") rotate(" + (d.angle / 2*Math.PI * 360) + "," + cOffsetX + "," + cOffsetY + ")";
             });
 
         selectData.exit().remove();
@@ -218,6 +246,9 @@
         bo.next();
 
         engine.start(drawMatter);
+        engine.world.gravity.x = 0;
+        engine.world.gravity.y = 0.3;
+        addBottom();
     });
 
 </script>
