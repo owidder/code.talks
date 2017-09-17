@@ -40,6 +40,10 @@
         font-weight: bolder;
     }
 
+    text.dynamic {
+        font-size: .75em;
+    }
+
 </style>
 <body>
 <div id="svgcanvas"></div>
@@ -172,15 +176,16 @@
 
         rectSelectionWithData.exit()
             .each(function (d) {
-                const x = _x(d.i) + BAR_WIDTH/2;
-                const y = BAR_OFFSET_Y - _height(d.wg) + d.height/2;
+                const x = _x(d.i);
+                const bodyX = x + BAR_WIDTH/2;
+                const bodyY = BAR_OFFSET_Y - _height(d.wg) + d.height/2;
 
-                const rectBody = Matter.Bodies.rectangle(x, y, BAR_WIDTH, d.height, {
+                const rectBody = Matter.Bodies.rectangle(bodyX, bodyY, BAR_WIDTH, d.height, {
                     isStatic: false, __data: d, color: color(d.title), className: "matter forlegend",
-                    _legend: legend(d)
+                    _legend: legend(d), title: d.title
                 });
 
-                const circleBody = Matter.Bodies.circle(x + BAR_WIDTH/3, BAR_OFFSET_Y + 100, 2, {
+                const circleBody = Matter.Bodies.circle(x + (BAR_WIDTH*Math.random()), BAR_OFFSET_Y + 100, 2, {
                     isStatic: true, color: "grey", className: "matter"
                 });
 

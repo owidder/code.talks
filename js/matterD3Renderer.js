@@ -144,6 +144,13 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
         data.exit().remove();
     }
 
+    function center(d) {
+        return {
+            x: (d.bounds.max.x + d.bounds.min.x)/2,
+            y: (d.bounds.max.y + d.bounds.min.y)/2
+        }
+    }
+
     function renderD3Titles() {
         var bodiesWithTitles = Matter.Composite.allBodies(engine.world).filter(hasTitle);
 
@@ -154,6 +161,7 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
 
         data.enter()
             .append("text")
+            .attr("text-anchor", "middle")
             .attr("class", "dynamic")
             .text(function(d) {
                 return d.title;
@@ -161,12 +169,14 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
 
         _gBodies.selectAll("text.dynamic")
             .attr("x", function(d) {
-                var avx = (d.bounds.max.x + d.bounds.min.x) / 2 - 20;
-                return avx;
+                return center(d).x;
             })
             .attr("y", function(d) {
-                var avy = (d.bounds.max.y + d.bounds.min.y) / 2 - 15;
-                return avy;
+                return center(d).y;
+            })
+            .attr("transform", function(d) {
+                var c = center(d);
+                return "rotate(" + (d.angle / (2*Math.PI) * 360) + "," + (c.x)+ "," + (c.y) + ")";
             });
 
         data.exit().remove();
