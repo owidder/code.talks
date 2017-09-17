@@ -36,11 +36,11 @@ bottle.factory("Bo", function (container) {
             });
         }
 
-        function callDrawFunc() {
+        function callDrawFunc(inc) {
             util.changeHashParam("date", timeSeries[ctr][0].date);
             const ordered = timeSeries[ctr].slice(0,count);
             const orderedWithI = addI(ordered);
-            drawFunc(_.orderBy(orderedWithI, ['wg'], ['desc']));
+            drawFunc(_.orderBy(orderedWithI, ['wg'], ['desc']), inc);
         }
 
         function goto(date) {
@@ -54,13 +54,15 @@ bottle.factory("Bo", function (container) {
         }
 
         function next() {
+            var inc = true;
             if(ctr < 0 || ctr >= timeSeries.length-1) {
                 ctr = 0;
+                inc = false;
             }
             else {
                 ctr++;
             }
-            callDrawFunc();
+            callDrawFunc(inc);
         }
 
         function prev() {
@@ -70,7 +72,7 @@ bottle.factory("Bo", function (container) {
             else {
                 ctr--;
             }
-            callDrawFunc();
+            callDrawFunc(false);
         }
 
         read().then(function() {

@@ -93,7 +93,7 @@
         return d.title + ": " + d3.format(",d")(d.wg);
     }
 
-    function drawBars(data) {
+    function drawBars(data, inc) {
 
         document.querySelector("h1#title").innerHTML = data[0].date;
 
@@ -181,6 +181,8 @@
 
         rectSelectionWithData.exit()
             .each(function (d) {
+                if(!inc) return;
+
                 const x = _x(d.i);
                 const bodyX = x + BAR_WIDTH/2;
                 const bodyY = BAR_OFFSET_Y - _height(d.wg) + d.height/2;
@@ -233,73 +235,6 @@
         pathStr += " Z";
 
         return pathStr;
-    }
-
-    function drawMatter2() {
-        var dynamic = Matter.Composite.allBodies(engine.world).filter(function (b) {
-            return (b.isStatic == false);
-        });
-
-        var data = g.selectAll("path.dynamic")
-            .data(dynamic, function(d) {
-                return d.id;
-            });
-
-        data.enter()
-            .append("path")
-            .attr("class", "dynamic")
-            .style("fill", function (d) {
-                return color(d.__data.title);
-            });
-
-        g.selectAll("path.dynamic")
-            .attr("d", createPathFromBody);
-
-        data.exit().remove();
-    }
-
-    function drawMatter() {
-        const dynamicBodies = Matter.Composite.allBodies(engine.world).filter(function (b) {
-            return (b.isStatic == false);
-        });
-
-        const selectData = g.selectAll("g.matter").data(dynamicBodies, function(d) {
-            return d.id;
-        });
-
-        const enterG = selectData.enter()
-            .append("g")
-            .attr("class", "matter");
-
-        enterG.append("rect")
-            .attr("width", BAR_WIDTH)
-            .attr("height", function(d) {
-                return d.__data.height;
-            })
-            .style("fill", function (d) {
-                return color(d.__data.title);
-            });
-
-        enterG.append("text")
-            .text(function (d) {
-                return d.__data.title;
-            })
-            .attr("transform", function (d) {
-                var x = BAR_WIDTH/2;
-                return textTranslate(x, -10);
-            });
-
-
-        g.selectAll("g.matter")
-            .attr("transform", function (d) {
-                const cOffsetX = BAR_WIDTH/2;
-                const cOffsetY = d.__data.height/2;
-                const x = d.position.x - cOffsetX;
-                const y = d.position.y - cOffsetY;
-                return "translate(" + x + "," + y + ") rotate(" + (d.angle / 2*Math.PI * 360) + "," + cOffsetX + "," + cOffsetY + ")";
-            });
-
-        selectData.exit().remove();
     }
 
     const bo = new Bo(drawBars, 5);
