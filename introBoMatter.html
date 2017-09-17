@@ -72,8 +72,8 @@
     var height = window.innerHeight;
 
     var BAR_OFFSET_X = width / 3;
-    var BAR_OFFSET_Y = height / 2;
-    var BAR_WIDTH = 100;
+    var BAR_OFFSET_Y = height / 3 * 2;
+    var BAR_WIDTH = 50;
     var BAR_GAP = 5;
 
     const g = (new Svg("#svgcanvas", width, height)).drawingG;
@@ -175,7 +175,7 @@
                     _legend: legend(d), title: d.title
                 });
 
-                const circleBody = Matter.Bodies.circle(x + (BAR_WIDTH * Math.random()), BAR_OFFSET_Y + 100, 2, {
+                const circleBody = Matter.Bodies.circle(x + 10, BAR_OFFSET_Y + 100, 2, {
                     isStatic: true, color: "grey", className: "matter"
                 });
 
@@ -232,14 +232,14 @@
     const engine = new Engine();
 
     function addBottom() {
-        var rect = Matter.Bodies.rectangle(width / 2, height, width, 100, {
+        var rect = Matter.Bodies.rectangle(width / 2, height+5, width, 50, {
             isStatic: true, color: "grey", className: "matter"
         });
 
         Matter.World.add(engine.world, [rect]);
     }
 
-    const bo = new Bo(drawBars, 5);
+    const bo = new Bo(drawBars, 10);
     bo.ready.then(function () {
         if (_.isEmpty(date)) {
             bo.next();

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
-<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
+<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css"
+      media="screen,projection"/>
 <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
 <link rel="stylesheet" type="text/css" href="css/legend.css">
 
@@ -9,13 +10,18 @@
 <script src="node_modules/lodash/lodash.js"></script>
 <script src="node_modules/bottlejs/dist/bottle.js"></script>
 <script>const bottle = new Bottle();</script>
+<script src="node_modules/matter-js/build/matter.js"></script>
+<script src="node_modules/jquery/dist/jquery.js"></script>
+<script src="node_modules/js-url/url.js"></script>
 
 <script src="js/util/util.js"></script>
 <script src="js/util/svgUtil.js"></script>
 <script src="js/util/SimplePromise.js"></script>
+<script src="js/matterD3Renderer.js"></script>
 <script src="js/legend.js"></script>
 <script src="js/svg.js"></script>
 <script src="js/bo.js"></script>
+<script src="js/Engine.js"></script>
 
 <style>
 
@@ -25,24 +31,29 @@
         left: 0;
     }
 
-    rect.bar {
+    rect.bar, g.matter rect, .matter {
         opacity: .8;
         stroke: black;
         stroke-width: 2px;
     }
 
-    text.bar {
+    text.bar, g.matter text {
         font-size: 2em;
         opacity: .5;
         font-weight: bolder;
+    }
+
+    text.dynamic {
+        font-size: .75em;
     }
 
 </style>
 <body>
 <div id="svgcanvas"></div>
 <h1 id="title"></h1>
-<a class="btn-floating btn-large waves-effect waves-light blue"onclick="bo.prev()" ><i class="material-icons">skip_previous</i></a>
-<a class="btn-floating btn-large waves-effect waves-light blue"onclick="bo.next()" ><i class="material-icons">skip_next</i></a>
+<a class="btn-floating btn-large waves-effect waves-light blue" onclick="bo.prev()"><i class="material-icons">skip_previous</i></a>
+<a class="btn-floating btn-large waves-effect waves-light blue" onclick="bo.next()"><i
+        class="material-icons">skip_next</i></a>
 
 <script>
 
@@ -52,42 +63,67 @@
 
     const Svg = bottle.container.Svg;
     const Bo = bottle.container.Bo;
+    const util = bottle.container.util;
+
+    const date = util.getHashParam("date", "");
 
     var width = window.innerWidth;
     var height = window.innerHeight;
 
-    const g = (new Svg("#svgcanvas", width, height)).drawingG;
-
-    var BAR_OFFSET_X = width/4;
-    var BAR_OFFSET_Y = height*3/4;
-    var BAR_WIDTH = 100 ;
+    var BAR_OFFSET_X = width / 3;
+    var BAR_OFFSET_Y = height / 3 * 2;
+    var BAR_WIDTH = 50;
     var BAR_GAP = 5;
-    var START_HEIGHT = 0;
+
+    const g = (new Svg("#svgcanvas", width, height)).drawingG;
+    g.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + (BAR_OFFSET_X - 10) + ",0)");
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    var _height = d3.scaleLinear().domain([0, 1e+8]).range([0, height/2]);
+    function textTranslate(x, y) {
+        return "translate(" + x + "," + y + ") rotate(270)";
+    }
+
+    function legend(d) {
+        return d.title + ": " + d3.format(",d")(d.wg);
+    }
+
+    const _height = d3.scaleLinear()
+        .range([0, BAR_OFFSET_Y-20]);
 
     function _x(index) {
         return index * (BAR_WIDTH + BAR_GAP) + BAR_OFFSET_X;
     }
 
-    function textTranslate(x) {
-        return "translate(" + x + "," + (BAR_OFFSET_Y - 10) + ") rotate(270)";
-    }
+    function drawBars(data, inc) {
 
-    function drawBars(data) {
+        const max = d3.max(data, function (d) {
+            return d.wg;
+        });
+        _height.domain([0, max]);
+
+        const _y = d3.scaleLinear()
+            .domain([0, max])
+            .range([BAR_OFFSET_Y, 20]);
 
         document.querySelector("h1#title").innerHTML = data[0].date;
+
+        const t = g.transition().duration(1000);
+        t.selectAll(".axis")
+            .call(d3.axisLeft(_y));
 
         /////////////////////////////////
         // SELECT
         /////////////////////////////////
 
+        /**** bar *****/
         const rectSelectionWithData = g.selectAll("rect.bar")
             .data(data, function (d) {
                 return d.title;
             });
+        /**** bar *****/
 
         const textSelectionWithData = g.selectAll("text.bar")
             .data(data, function (d) {
@@ -98,7 +134,7 @@
         // ENTER
         /////////////////////////////////
 
-        // rect
+        /**** bar *****/
         rectSelectionWithData.enter()
             .append("rect")
             .attr("class", "bar forlegend")
@@ -109,8 +145,8 @@
             .attr("x", function (d) {
                 return _x(d.i);
             })
-            .attr("height", START_HEIGHT)
-            .attr("y", BAR_OFFSET_Y - START_HEIGHT);
+            .attr("y", _y(0));
+        /**** bar *****/
 
         // text
         const textEnter = textSelectionWithData.enter()
@@ -120,52 +156,59 @@
                 return d.title;
             })
             .attr("transform", function (d) {
-                var x = _x(d.i) + BAR_WIDTH/2;
-                return textTranslate(x);
+                var x = _x(d.i) + BAR_WIDTH / 2;
+                return textTranslate(x, BAR_OFFSET_Y - 10);
             });
 
         /////////////////////////////////
         // UPDATE
         /////////////////////////////////
 
-        // rect
+        /**** bar *****/
         d3.selectAll("rect.bar")
             .transition()
             .duration(1000)
             .attr("x", function (d) {
                 return _x(d.i);
             })
-            .attr("_legend", function (d) {
-                return d.title + ": " + d3.format(",d")(d.wg);
-            })
-            .attr("height", function(d) {
+            .attr("_legend", legend)
+            .attr("height", function (d) {
                 return _height(d.wg);
             })
             .attr("y", function (d) {
-                return BAR_OFFSET_Y - _height(d.wg);
+                return _y(d.wg);
             });
+        /**** bar *****/
 
         // text
         d3.selectAll("text.bar")
             .transition()
             .duration(1000)
             .attr("transform", function (d) {
-                var x = _x(d.i) + BAR_WIDTH/2;
-                return textTranslate(x);
+                var x = _x(d.i) + BAR_WIDTH / 2;
+                return textTranslate(x, BAR_OFFSET_Y - 10);
             });
 
         /////////////////////////////////
         // EXIT
         /////////////////////////////////
 
+        /**** bar *****/
         rectSelectionWithData.exit().remove();
+        /**** bar *****/
 
         textSelectionWithData.exit().remove();
+
     }
 
-    const bo = new Bo(drawBars, 5);
+    const bo = new Bo(drawBars, 10);
     bo.ready.then(function () {
-        bo.next();
+        if (_.isEmpty(date)) {
+            bo.next();
+        }
+        else {
+            bo.goto(date);
+        }
     });
 
 </script>
