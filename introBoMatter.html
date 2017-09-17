@@ -10,6 +10,8 @@
 <script src="node_modules/bottlejs/dist/bottle.js"></script>
 <script>const bottle = new Bottle();</script>
 <script src="node_modules/matter-js/build/matter.js"></script>
+<script src="node_modules/jquery/dist/jquery.js"></script>
+<script src="node_modules/js-url/url.js"></script>
 
 <script src="js/util/util.js"></script>
 <script src="js/util/svgUtil.js"></script>
@@ -60,6 +62,9 @@
     const Svg = bottle.container.Svg;
     const Bo = bottle.container.Bo;
     const Engine = bottle.container.Engine;
+    const util = bottle.container.util;
+
+    const date = util.getHashParam("date", "");
 
     var width = window.innerWidth;
     var height = window.innerHeight;
@@ -299,7 +304,12 @@
 
     const bo = new Bo(drawBars, 5);
     bo.ready.then(function () {
-        bo.next();
+        if(_.isEmpty(date)) {
+            bo.next();
+        }
+        else {
+            bo.goto(date);
+        }
 
         var d3Renderer = new MatterD3Renderer(engine, g, width, height);
         engine.start(d3Renderer.renderD3);

@@ -6,6 +6,7 @@
 
 bottle.factory("Bo", function (container) {
     const SimplePromise = container.SimplePromise;
+    const util = container.util;
 
     function Bo(drawFunc, count) {
         const that = this;
@@ -36,9 +37,20 @@ bottle.factory("Bo", function (container) {
         }
 
         function callDrawFunc() {
+            util.changeHashParam("date", timeSeries[ctr][0].date);
             const ordered = timeSeries[ctr].slice(0,count);
             const orderedWithI = addI(ordered);
             drawFunc(_.orderBy(orderedWithI, ['wg'], ['desc']));
+        }
+
+        function goto(date) {
+            for(var i = 0; i < timeSeries.length; i++) {
+                if(timeSeries[i][0].date == date) {
+                    ctr = i;
+                    callDrawFunc();
+                    break;
+                }
+            }
         }
 
         function next() {
@@ -64,11 +76,13 @@ bottle.factory("Bo", function (container) {
         read().then(function() {
             that.constructor.prototype.next = next;
             that.constructor.prototype.prev = prev;
+            that.constructor.prototype.goto = goto;
             ready.resolve(timeSeries);
         });
 
         this.constructor.prototype.next = function () {};
         this.constructor.prototype.prev = function () {};
+        this.constructor.prototype.goto = function () {};
         this.ready = ready.promise;
     }
 
