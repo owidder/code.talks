@@ -14,6 +14,7 @@
 <script src="js/util/util.js"></script>
 <script src="js/util/svgUtil.js"></script>
 <script src="js/util/SimplePromise.js"></script>
+<script src="js/matterD3Renderer.js"></script>
 <script src="js/legend.js"></script>
 <script src="js/svg.js"></script>
 <script src="js/bo.js"></script>
@@ -27,7 +28,7 @@
         left: 0;
     }
 
-    rect.bar, g.matter rect {
+    rect.bar, g.matter rect, .matter {
         opacity: .8;
         stroke: black;
         stroke-width: 2px;
@@ -62,7 +63,7 @@
     const g = (new Svg("#svgcanvas", width, height)).drawingG;
 
     var BAR_OFFSET_X = width/4;
-    var BAR_OFFSET_Y = height*3/4;
+    var BAR_OFFSET_Y = height/2;
     var BAR_WIDTH = 100 ;
     var BAR_GAP = 5;
     var START_HEIGHT = 0;
@@ -77,6 +78,10 @@
 
     function textTranslate(x, y) {
         return "translate(" + x + "," + y + ") rotate(270)";
+    }
+
+    function legend(d) {
+        return d.title + ": " + d3.format(",d")(d.wg);
     }
 
     function drawBars(data) {
@@ -140,9 +145,7 @@
                 d.x = x;
                 return x;
             })
-            .attr("_legend", function (d) {
-                return d.title + ": " + d3.format(",d")(d.wg);
-            })
+            .attr("_legend", legend)
             .attr("height", function(d) {
                 const height = _height(d.wg);
                 d.height = height;
@@ -171,16 +174,25 @@
             .each(function (d) {
                 const x = _x(d.i) + BAR_WIDTH/2;
                 const y = BAR_OFFSET_Y - _height(d.wg) + d.height/2;
+
                 const rectBody = Matter.Bodies.rectangle(x, y, BAR_WIDTH, d.height, {
-                    isStatic: false, __data: d
+                    isStatic: false, __data: d, color: color(d.title), className: "matter forlegend",
+                    _legend: legend(d)
                 });
-                const circleBody = Matter.Bodies.circle(x + BAR_WIDTH/3, y + height/4, 10, {
-                    isStatic: true
+
+                const circleBody = Matter.Bodies.circle(x + BAR_WIDTH/3, BAR_OFFSET_Y + 100, 2, {
+                    isStatic: true, color: "grey", className: "matter"
                 });
-                Matter.World.add(engine.world, [rectBody]);
+
+                Matter.World.add(engine.world, [rectBody, circleBody]);
+
                 setTimeout(function () {
                     Matter.World.remove(engine.world, circleBody);
                 }, 3000);
+
+                setTimeout(function () {
+                    Matter.World.remove(engine.world, rectBody);
+                }, 20000)
             })
             .remove();
 
@@ -190,11 +202,50 @@
     const engine = new Engine();
 
     function addBottom() {
-        var rect = Matter.Bodies.rectangle(width/2, height + 50, width, 100, {
-            isStatic: true
+        var rect = Matter.Bodies.rectangle(width/2, height, width, 100, {
+            isStatic: true, color: "grey", className: "matter"
         });
 
         Matter.World.add(engine.world, [rect]);
+    }
+
+    function createPathFromBody(d) {
+        var pathStr = "";
+        if(d.vertices.length > 0) {
+            pathStr += "M" + d.vertices[0].x + " " + d.vertices[0].y;
+            if(d.vertices.length > 1) {
+                var i;
+                for(i = 1; i < d.vertices.length; i++) {
+                    pathStr += " L" + d.vertices[i].x + " " + d.vertices[i].y;
+                }
+            }
+        }
+        pathStr += " Z";
+
+        return pathStr;
+    }
+
+    function drawMatter2() {
+        var dynamic = Matter.Composite.allBodies(engine.world).filter(function (b) {
+            return (b.isStatic == false);
+        });
+
+        var data = g.selectAll("path.dynamic")
+            .data(dynamic, function(d) {
+                return d.id;
+            });
+
+        data.enter()
+            .append("path")
+            .attr("class", "dynamic")
+            .style("fill", function (d) {
+                return color(d.__data.title);
+            });
+
+        g.selectAll("path.dynamic")
+            .attr("d", createPathFromBody);
+
+        data.exit().remove();
     }
 
     function drawMatter() {
@@ -245,7 +296,8 @@
     bo.ready.then(function () {
         bo.next();
 
-        engine.start(drawMatter);
+        var d3Renderer = new MatterD3Renderer(engine, g, width, height);
+        engine.start(d3Renderer.renderD3);
         engine.world.gravity.x = 0;
         engine.world.gravity.y = 0.3;
         addBottom();

@@ -124,14 +124,17 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
         data.enter()
             .append("path")
             .attr("class", createClassNameFromBody)
+            .attr("_legend", function (d) {
+                return d._legend != null ? d._legend : undefined;
+            })
             .style("fill", function (d) {
-                return d.color != null ? d.color : "black";
+                return d.color != null ? d.color : undefined;
             })
             .style("stroke", function(d) {
-                return d.strokeColor != null ? d.strokeColor : "black";
+                return d.strokeColor != null ? d.strokeColor : undefined;
             })
             .style("stroke-width", function(d) {
-                return d.strokeWidth != null ? d.strokeWidth : "0px";
+                return d.strokeWidth != null ? d.strokeWidth : undefined;
             });
 
 
