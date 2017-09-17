@@ -71,13 +71,15 @@
     var width = window.innerWidth;
     var height = window.innerHeight;
 
-    const g = (new Svg("#svgcanvas", width, height)).drawingG;
-
-    var BAR_OFFSET_X = width / 4;
+    var BAR_OFFSET_X = width / 3;
     var BAR_OFFSET_Y = height / 2;
     var BAR_WIDTH = 100;
     var BAR_GAP = 5;
-    var START_HEIGHT = 0;
+
+    const g = (new Svg("#svgcanvas", width, height)).drawingG;
+    g.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + (BAR_OFFSET_X - 10) + ",0)");
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -93,19 +95,25 @@
         return d.title + ": " + d3.format(",d")(d.wg);
     }
 
+    const _height = d3.scaleLinear()
+        .range([0, BAR_OFFSET_Y-20]);
+
     function drawBars(data, inc) {
 
-        const _height = d3.scaleLinear()
-            .domain([0, d3.max(data, function (d) {
-                return d.wg;
-            })])
-            .range([0, BAR_OFFSET_Y]);
+        const max = d3.max(data, function (d) {
+            return d.wg;
+        });
+        _height.domain([0, max]);
 
-        const _y = function (d) {
-            return BAR_OFFSET_Y -_height(d);
-        };
+        const _y = d3.scaleLinear()
+            .domain([0, max])
+            .range([BAR_OFFSET_Y, 20]);
 
         document.querySelector("h1#title").innerHTML = data[0].date;
+
+        const t = g.transition().duration(1000);
+        t.selectAll(".axis")
+            .call(d3.axisLeft(_y));
 
         /////////////////////////////////
         // SELECT
@@ -229,22 +237,6 @@
         });
 
         Matter.World.add(engine.world, [rect]);
-    }
-
-    function createPathFromBody(d) {
-        var pathStr = "";
-        if (d.vertices.length > 0) {
-            pathStr += "M" + d.vertices[0].x + " " + d.vertices[0].y;
-            if (d.vertices.length > 1) {
-                var i;
-                for (i = 1; i < d.vertices.length; i++) {
-                    pathStr += " L" + d.vertices[i].x + " " + d.vertices[i].y;
-                }
-            }
-        }
-        pathStr += " Z";
-
-        return pathStr;
     }
 
     const bo = new Bo(drawBars, 5);
