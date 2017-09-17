@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
-<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
+<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css"
+      media="screen,projection"/>
 <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
 <link rel="stylesheet" type="text/css" href="css/legend.css">
 
@@ -50,8 +51,9 @@
 <body>
 <div id="svgcanvas"></div>
 <h1 id="title"></h1>
-<a class="btn-floating btn-large waves-effect waves-light blue"onclick="bo.prev()" ><i class="material-icons">skip_previous</i></a>
-<a class="btn-floating btn-large waves-effect waves-light blue"onclick="bo.next()" ><i class="material-icons">skip_next</i></a>
+<a class="btn-floating btn-large waves-effect waves-light blue" onclick="bo.prev()"><i class="material-icons">skip_previous</i></a>
+<a class="btn-floating btn-large waves-effect waves-light blue" onclick="bo.next()"><i
+        class="material-icons">skip_next</i></a>
 
 <script>
 
@@ -71,15 +73,13 @@
 
     const g = (new Svg("#svgcanvas", width, height)).drawingG;
 
-    var BAR_OFFSET_X = width/4;
-    var BAR_OFFSET_Y = height/2;
-    var BAR_WIDTH = 100 ;
+    var BAR_OFFSET_X = width / 4;
+    var BAR_OFFSET_Y = height / 2;
+    var BAR_WIDTH = 100;
     var BAR_GAP = 5;
     var START_HEIGHT = 0;
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-    var _height = d3.scaleLinear().domain([0, 1e+8]).range([0, height/2]);
 
     function _x(index) {
         return index * (BAR_WIDTH + BAR_GAP) + BAR_OFFSET_X;
@@ -94,6 +94,16 @@
     }
 
     function drawBars(data, inc) {
+
+        const _height = d3.scaleLinear()
+            .domain([0, d3.max(data, function (d) {
+                return d.wg;
+            })])
+            .range([0, BAR_OFFSET_Y]);
+
+        const _y = function (d) {
+            return BAR_OFFSET_Y -_height(d);
+        };
 
         document.querySelector("h1#title").innerHTML = data[0].date;
 
@@ -126,8 +136,7 @@
             .attr("x", function (d) {
                 return _x(d.i);
             })
-            .attr("height", START_HEIGHT)
-            .attr("y", BAR_OFFSET_Y - START_HEIGHT);
+            .attr("y", _y(0));
 
         // text
         const textEnter = textSelectionWithData.enter()
@@ -137,41 +146,7 @@
                 return d.title;
             })
             .attr("transform", function (d) {
-                var x = _x(d.i) + BAR_WIDTH/2;
-                return textTranslate(x, BAR_OFFSET_Y - 10);
-            });
-
-        /////////////////////////////////
-        // UPDATE
-        /////////////////////////////////
-
-        // rect
-        d3.selectAll("rect.bar")
-            .transition()
-            .duration(1000)
-            .attr("x", function (d) {
-                const x = _x(d.i);
-                d.x = x;
-                return x;
-            })
-            .attr("_legend", legend)
-            .attr("height", function(d) {
-                const height = _height(d.wg);
-                d.height = height;
-                return height;
-            })
-            .attr("y", function (d) {
-                const y = BAR_OFFSET_Y - _height(d.wg);
-                d.y = y;
-                return y;
-            });
-
-        // text
-        d3.selectAll("text.bar")
-            .transition()
-            .duration(1000)
-            .attr("transform", function (d) {
-                var x = _x(d.i) + BAR_WIDTH/2;
+                var x = _x(d.i) + BAR_WIDTH / 2;
                 return textTranslate(x, BAR_OFFSET_Y - 10);
             });
 
@@ -181,18 +156,18 @@
 
         rectSelectionWithData.exit()
             .each(function (d) {
-                if(!inc) return;
+                if (!inc) return;
 
                 const x = _x(d.i);
-                const bodyX = x + BAR_WIDTH/2;
-                const bodyY = BAR_OFFSET_Y - _height(d.wg) + d.height/2;
+                const bodyX = x + BAR_WIDTH / 2;
+                const bodyY = d.y + d.height / 2;
 
                 const rectBody = Matter.Bodies.rectangle(bodyX, bodyY, BAR_WIDTH, d.height, {
                     isStatic: false, __data: d, color: color(d.title), className: "matter forlegend",
                     _legend: legend(d), title: d.title
                 });
 
-                const circleBody = Matter.Bodies.circle(x + (BAR_WIDTH*Math.random()), BAR_OFFSET_Y + 100, 2, {
+                const circleBody = Matter.Bodies.circle(x + (BAR_WIDTH * Math.random()), BAR_OFFSET_Y + 100, 2, {
                     isStatic: true, color: "grey", className: "matter"
                 });
 
@@ -209,12 +184,47 @@
             .remove();
 
         textSelectionWithData.exit().remove();
+
+        /////////////////////////////////
+        // UPDATE
+        /////////////////////////////////
+
+        // rect
+        d3.selectAll("rect.bar")
+            .transition()
+            .duration(1000)
+            .attr("x", function (d) {
+                const x = _x(d.i);
+                d.x = x;
+                return x;
+            })
+            .attr("_legend", legend)
+            .attr("height", function (d) {
+                const height = _height(d.wg);
+                d.height = height;
+                return height;
+            })
+            .attr("y", function (d) {
+                const y = _y(d.wg);
+                d.y = y;
+                return y;
+            });
+
+        // text
+        d3.selectAll("text.bar")
+            .transition()
+            .duration(1000)
+            .attr("transform", function (d) {
+                var x = _x(d.i) + BAR_WIDTH / 2;
+                return textTranslate(x, BAR_OFFSET_Y - 10);
+            });
+
     }
 
     const engine = new Engine();
 
     function addBottom() {
-        var rect = Matter.Bodies.rectangle(width/2, height, width, 100, {
+        var rect = Matter.Bodies.rectangle(width / 2, height, width, 100, {
             isStatic: true, color: "grey", className: "matter"
         });
 
@@ -223,11 +233,11 @@
 
     function createPathFromBody(d) {
         var pathStr = "";
-        if(d.vertices.length > 0) {
+        if (d.vertices.length > 0) {
             pathStr += "M" + d.vertices[0].x + " " + d.vertices[0].y;
-            if(d.vertices.length > 1) {
+            if (d.vertices.length > 1) {
                 var i;
-                for(i = 1; i < d.vertices.length; i++) {
+                for (i = 1; i < d.vertices.length; i++) {
                     pathStr += " L" + d.vertices[i].x + " " + d.vertices[i].y;
                 }
             }
@@ -239,7 +249,7 @@
 
     const bo = new Bo(drawBars, 5);
     bo.ready.then(function () {
-        if(_.isEmpty(date)) {
+        if (_.isEmpty(date)) {
             bo.next();
         }
         else {
