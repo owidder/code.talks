@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .bar {
+        opacity: 1;
+    }
+
+    .grey {
+        fill: grey;
+    }
+
+    .red {
+        fill: red;
+    }
+
+    .green {
+        fill: green;
+    }
+
+    .blue {
+        fill: blue;
+    }
+
+    .orange {
+        fill: orange;
+    }
+
+    .cyan {
+        fill: cyan;
+    }
+
+    .lightblue {
+        fill: lightblue;
+    }
+
+    .yellow {
+        fill: yellow;
+    }
+
+    .purple {
+        fill: purple;
+    }
+
+    text.dynamic {
+        font-size: .75em;
+    }
+
+    div.panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+    }
+
+    rect.debug {
+        stroke: 1;
+        fill: grey;
+    }
+
+    text.forecast {
+        fill: white;
+    }
+
+    path.st0 {
+        fill: white;
+    }
+
+    rect.debug {
+        fill: none;
+        stroke: black;
+    }
+
+    .invisible {
+        fill: none;
+    }
+
+    text.axis {
+        font-size: 2em;
+        fill: black;
+    }
+
+    button {
+        width: 100%;
+    }
+
+/*
+    path.dynamic {
+        stroke: black;
+        stroke-width: 1px;
+        fill: none;
+    }
+*/
+
+/*
+    button:not(.disabled) {
+        background-color: #004A7F;
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+        border: none;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;
+        font-family: Arial;
+        font-size: 20px;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+    }
+*/
+    @-webkit-keyframes glowing {
+        0% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+        50% { background-color: deepskyblue; -webkit-box-shadow: 0 0 40px deepskyblue; }
+        100% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+    }
+
+    @-moz-keyframes glowing {
+        0% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+        50% { background-color: deepskyblue; -webkit-box-shadow: 0 0 40px deepskyblue; }
+        100% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+    }
+
+    @-o-keyframes glowing {
+        0% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+        50% { background-color: deepskyblue; -webkit-box-shadow: 0 0 40px deepskyblue; }
+        100% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+    }
+
+    @keyframes glowing {
+        0% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+        50% { background-color: deepskyblue; -webkit-box-shadow: 0 0 40px deepskyblue; }
+        100% { background-color: blue; -webkit-box-shadow: 0 0 3px blue; }
+    }
+
+    button:not(.disabled) {
+        -webkit-animation: glowing 1500ms infinite;
+        -moz-animation: glowing 1500ms infinite;
+        -o-animation: glowing 1500ms infinite;
+        animation: glowing 1500ms infinite;
+    }
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css"
+      media="screen,projection"/>
+<link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+
+<body>
+<div class="canvas"></div>
+<div class="panel">
+    <button class="button step1 waves-effect waves-light btn" type="button" onclick="forecast()">Step 1: Click here to draw forecast</button><p>
+    <button class="button step2 waves-effect waves-light btn disabled" type="button" onclick="reality()">Step 2: Click here to draw Reality</button><p></p>
+    <button class="button step3 waves-effect waves-light btn disabled" type="button" onclick="location.reload()" >Step 3: Do it again!!!</button>
+</div>
+
+<script src="node_modules/lodash/lodash.js"></script>
+<script src="node_modules/bottlejs/dist/bottle.js"></script>
+<script>const bottle = new Bottle();</script>
+<script src="node_modules/d3/build/d3.js"></script>
+<script src="node_modules/matter-js/build/matter.js"></script>
+<script src="js/matterD3Renderer.js"></script>
+<script src="js/util/SimplePromise.js"></script>
+<script>
+
+    var SimplePromise = bottle.container.SimplePromise;
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    var svg = d3.select("div.canvas").append("svg")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height);
+
+    var gStatic = svg.append("g");
+    var gDynamic = svg.append("g");
+    var gTank = svg.append("g").attr("class", "tank stay");
+
+    var MIN_HEIGHT = 40;
+    var BAR_WIDTH = 30;
+    var BAR_GAP = 35;
+    var BAR_OFFSET = width / 3;
+    var SHOOT_START_X = Math.max(BAR_OFFSET - 500, 200);
+    var START_HEIGHT = 50;
+    var BOTTOM_OFFSET = 50;
+    var BOTTOM = height - BOTTOM_OFFSET;
+    var TANK_DURATION = 5000;
+    var BLOCK_HEIGHT = 150;
+    var BLOCK_WIDTH = 100;
+
+    var engine = Matter.Engine.create();
+
+    function drawStatic() {
+        gStatic.append("rect")
+            .attr("class", "body static invisible")
+            .attr("x", BAR_OFFSET)
+            .attr("y", BOTTOM)
+            .attr("width", barData.length * (BAR_WIDTH + BAR_GAP))
+            .attr("height", 20);
+    }
+
+    function translate(index, height) {
+        var x = index * (BAR_WIDTH + BAR_GAP);
+        var y = 500 - height;
+        return "translate(" + x + "," + y + ")";
+    }
+
+    function hasClass(element, className) {
+        return element.classList.contains(className);
+    }
+
+    var engineStarted = false;
+    function startEngine() {
+        var d3Renderer;
+        if (!engineStarted) {
+            Matter.Engine.run(engine);
+            d3Renderer = new MatterD3Renderer(engine, gDynamic);
+            Matter.Events.on(engine, "afterUpdate", function () {
+                d3Renderer.renderD3();
+            });
+        }
+    }
+
+    function createWorldFromDynamicElements() {
+        var elements = document.querySelectorAll("rect.body");
+        elements.forEach(function (element) {
+            var svgX = parseFloat(element.getAttribute("x"));
+            var svgY = parseFloat(element.getAttribute("y"));
+            var height = parseFloat(element.getAttribute("height"));
+            var width = parseFloat(element.getAttribute("width"));
+            var y = svgY + height / 2;
+            var x = svgX + width / 2;
+
+            var rectBody;
+
+            var isStatic = hasClass(element, "static");
+            if(!isStatic && height > width) {
+                var currentX, currentY = svgY;
+                var blockHeight = Math.min(height, BLOCK_HEIGHT);
+                var blockWidth = Math.min(width, BLOCK_WIDTH);
+                var currentBlockHeight, currentBlockWidth;
+                var bodyList = [];
+                while(currentY < svgY + height) {
+                    currentBlockHeight = Math.min(blockHeight, svgY + height - currentY);
+                    currentX = svgX;
+                    while(currentX < svgX + width) {
+                        currentBlockWidth = Math.min(blockWidth, svgX + width - currentX);
+                        rectBody = Matter.Bodies.rectangle(currentX + currentBlockWidth / 2,
+                            currentY + currentBlockHeight / 2,
+                            currentBlockWidth,
+                            currentBlockHeight,
+                            {isStatic: isStatic, className: element.classList.toString()});
+                        bodyList.push(rectBody);
+                        currentX += currentBlockWidth;
+                    }
+
+                    currentY += currentBlockHeight;
+                }
+                Matter.World.add(engine.world, bodyList);
+            }
+            else {
+                rectBody = Matter.Bodies.rectangle(x, y, width, height, {
+                    isStatic: isStatic, className: element.classList.toString()
+                });
+
+                Matter.World.add(engine.world, [rectBody]);
+            }
+
+            if (!isStatic && !hasClass(element, "stay")) {
+                element.remove();
+            }
+        });
+
+        startEngine();
+    }
+
+    function move(el, x, y, duration) {
+        var attr = el.attr("transform") || "";
+        attr += " translate(" + x + "," + y + ")";
+        if(duration != null) {
+            el
+                .transition()
+                .duration(duration)
+                .attr("transform", attr);
+        }
+        else {
+            el.attr("transform", attr);
+        }
+    }
+
+    function scale(el, x, y) {
+        var attr = el.attr("transform") || "";
+        attr += " scale(" + x + (y != null ? " " + y : "") + ")";
+        el.attr("transform", attr);
+    }
+
+    function moveTo(el, x, y, duration, leftOrRight, topOrBottom) {
+        if(leftOrRight == null) {
+            leftOrRight = "right";
+        }
+        if(topOrBottom == null) {
+            topOrBottom = "bottom";
+        }
+        var rect = el.node().getBoundingClientRect();
+        move(el, -rect[leftOrRight] + x, -rect[topOrBottom] + y, duration);
+    }
+
+    function createTank() {
+        d3.xml("cannon2.svg").mimeType("image/svg+xml").get(function(error, xml) {
+            if (error) throw error;
+            var paths = xml.documentElement.getElementsByTagName("path");
+            gTank.selectAll("path.tank")
+                .data(paths)
+                .enter()
+                .append("path")
+                .attr("class", function (d) {
+                    var attr = d.getAttribute("class");
+                    return "stay tank" + (attr != null ? " " + attr : "");
+                })
+                .attr("d", function (d) {
+                    return d.getAttribute("d");
+                })
+                .attr("transform", "scale(.4, .4)");
+
+            moveTo(gTank, 0, BOTTOM);
+        });
+    }
+
+    function showTank() {
+        var tankShown = new SimplePromise();
+        moveTo(gTank, SHOOT_START_X, BOTTOM, TANK_DURATION);
+        setTimeout(function () {
+            tankShown.resolve();
+        }, TANK_DURATION);
+        return tankShown.promise;
+    }
+
+    function hideTank() {
+        moveTo(gTank, 0, BOTTOM, TANK_DURATION);
+    }
+
+    var duration = 0;
+    function shoot(ctr) {
+        if(ctr == null) {
+            ctr = 0;
+        }
+        setTimeout(function () {
+            duration = 3000;
+            var body = Matter.Bodies.circle(SHOOT_START_X, BOTTOM - 100, 25);
+            Matter.World.add(engine.world, [body]);
+            body.force.x += .35;
+            if(ctr < 4) {
+                shoot(++ctr);
+            }
+            else {
+                hideTank();
+                d3.select("button.step3")
+                    .classed("disabled", false);
+            }
+        }, duration);
+    }
+
+    var _height = d3.scaleLinear().domain([0, 250]).rangeRound([0, height-100]);
+    var yaxis = d3.scaleLinear().domain([0, 250]).rangeRound([height, 100]);
+
+    function drawAxes(data) {
+        gStatic.append("text")
+            .attr("x", BAR_OFFSET + 20)
+            .attr("y", 50)
+            .attr("style", "font-size: 3em;")
+            .attr("fill", "grey")
+            .text("Story Point Forecast");
+
+        var xaxis = d3.scaleBand().rangeRound([BAR_OFFSET, BAR_OFFSET + data.length * (BAR_WIDTH + BAR_GAP)]).padding(0.1);
+        xaxis.domain(data.map(function(d) {
+            return d.title;
+        }));
+
+        gStatic.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + (BOTTOM) + ")")
+            .call(d3.axisBottom(xaxis));
+
+        gStatic.append("g")
+            .attr("class", "axis axis--y")
+            .attr("transform", "translate(" + BAR_OFFSET + "," + (-BOTTOM_OFFSET) + ")")
+            .call(d3.axisLeft(yaxis).ticks(10))
+            .append("text")
+            .attr("class", "axis")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -BOTTOM_OFFSET)
+            .attr("x", -height)
+            .attr("text-anchor", "start")
+            .text("Story Points");
+    }
+
+    function drawBars(data) {
+
+        function setHeightOfBarByData(selection) {
+            selection
+                .attr("height", function (d) {
+                    return _height(d.value);
+                })
+                .attr("y", function (d) {
+                    return yaxis(d.value) - BOTTOM_OFFSET;
+                });
+        }
+
+        function barX(d) {
+            var index = data.indexOf(d);
+            return BAR_OFFSET + index * (BAR_WIDTH + BAR_GAP) + (BAR_WIDTH)/2;
+        }
+
+        var selectionWithData = gDynamic.selectAll("g.barg")
+            .data(data, function (d) {
+                return d.key;
+            });
+
+        var gEnter = selectionWithData.enter()
+            .append("g")
+            .attr("class", "barg");
+
+        gEnter
+            .append("rect")
+            .attr("class", function (d) {
+                return "bar body dynamic " + d.key;
+            })
+            .attr("width", BAR_WIDTH)
+            .attr("x", barX)
+            .attr("height", _height(START_HEIGHT))
+            .attr("y", yaxis(START_HEIGHT) - BOTTOM_OFFSET);
+
+        gDynamic.selectAll("rect.bar")
+            .transition()
+            .duration(1000)
+            .call(setHeightOfBarByData);
+
+        selectionWithData.exit().remove();
+    }
+
+    var barData = [
+        {
+            title: "Sprint 28",
+            key: "red",
+            value: MIN_HEIGHT
+        },
+        {
+            title: "Sprint 29",
+            key: "green",
+            value: MIN_HEIGHT + 30 + (20 * Math.random())
+        },
+        {
+            title: "Sprint 30",
+            key: "blue",
+            value: MIN_HEIGHT + 50 + (20 * Math.random())
+        },
+        {
+            title: "Sprint 31",
+            key: "orange",
+            value: MIN_HEIGHT + 70 + (20 * Math.random())
+        },
+        {
+            title: "Sprint 32",
+            key: "cyan",
+            value: MIN_HEIGHT + 90 + (20 * Math.random())
+        },
+        {
+            title: "Sprint 33",
+            key: "black",
+            value: MIN_HEIGHT + 110 + (20 * Math.random())
+        },
+        {
+            title: "Sprint 34",
+            key: "grey",
+            value: MIN_HEIGHT + 130 + (20 * Math.random())
+        },
+        {
+            title: "Sprint 35",
+            key: "yellow",
+            value: MIN_HEIGHT + 150 + (20 * Math.random())
+        },
+        {
+            title: "Sprint 36",
+            key: "purple",
+            value: MIN_HEIGHT + 170 + (20 * Math.random())
+        },
+    ];
+
+    drawStatic();
+
+    function switchToStep2() {
+        d3.select("button.step1")
+            .classed("disabled", true);
+        d3.select("button.step2")
+            .classed("disabled", false);
+    }
+
+    function switchToStep3() {
+        d3.select("button.step2")
+            .classed("disabled", true);
+        d3.select("button.step3")
+            .classed("disabled", false);
+    }
+
+    function forecast() {
+        drawBars(barData);
+        switchToStep2();
+    }
+
+    var worldCreated = false;
+    function reality() {
+        d3.select("button.step2")
+            .classed("disabled", true);
+        showTank().then(function () {
+            if(!worldCreated) {
+                worldCreated = true;
+                createWorldFromDynamicElements();
+            }
+            setTimeout(function () {
+                shoot();
+            }, 500);
+        })
+    }
+
+    createTank();
+    drawAxes(barData);
+
+</script>
+</body>
+</html>
