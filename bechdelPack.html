@@ -62,6 +62,7 @@
     const createConstraint = bottle.container.constraints.createConstraint;
 
     const quota = util.getHashParam("q", "100");
+    const sortAttribute = util.getHashParam("sort", "");
     var width = window.innerWidth;
     var height = window.innerHeight;
 
@@ -83,6 +84,7 @@
                 isStatic: false
             });
             d.body = circleBody;
+            Matter.Body.set(circleBody, {mass: 1});
             Matter.World.add(engine.world, [circleBody]);
             const constraint = createConstraint(engine.world, d, function ()  {return 4;}, width, height, 0.00005, 0.001);
             d.constraint = constraint;
@@ -91,7 +93,7 @@
             }
             setTimeout(function () {
                 switchToStatic(d);
-            }, 15000);
+            }, 10000);
         }, 10);
     }
 
@@ -101,10 +103,14 @@
             .each(function (d) {
                 data.push(d);
             });
-        const sortedData = _.orderBy(data, function (element) {
-            return element.data.year;
-        });
-        addBodiesRecursive(sortedData, 0);
+        if(_.isEmpty(sortAttribute)) {
+            addBodiesRecursive(data, 0);
+        }
+        else {
+            addBodiesRecursive(_.orderBy(data, function (element) {
+                return Number(element.data[sortAttribute]);
+            }), 0);
+        }
     }
 
     const engine = new Engine();

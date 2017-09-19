@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css"
+      media="screen,projection"/>
+<link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+<link rel="stylesheet" type="text/css" href="css/legend.css">
+
+<script src="node_modules/d3/build/d3.js"></script>
+<script src="node_modules/lodash/lodash.js"></script>
+<script src="node_modules/bottlejs/dist/bottle.js"></script>
+<script>const bottle = new Bottle();</script>
+<script src="node_modules/matter-js/build/matter.js"></script>
+<script src="node_modules/jquery/dist/jquery.js"></script>
+<script src="node_modules/js-url/url.js"></script>
+
+<script src="js/util/util.js"></script>
+<script src="js/util/svgUtil.js"></script>
+<script src="js/util/SimplePromise.js"></script>
+<script src="js/matterD3Renderer.js"></script>
+<script src="js/legend.js"></script>
+<script src="js/svg.js"></script>
+<script src="js/bo.js"></script>
+<script src="js/Engine.js"></script>
+
+<body>
+
+<script>
+
+    /* global Matter */
+
+    const engine = Matter.Engine.create();
+    runner = Matter.Engine.run(engine);
+
+    const body = Matter.Bodies.circle(100, 100, 10, {
+        isStatic: false
+    });
+
+    Matter.World.add(engine.world, [body]);
+
+    Matter.Events.on(engine, "afterUpdate", function () {
+        console.log(body.position.y);
+    });
+
+</script>
+</body>
+</html>
