@@ -209,10 +209,20 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
                 return d.bodyA.position.y;
             })
             .attr("x2", function (d) {
-                return d.bodyB.position.x;
+                if(d.bodyB) {
+                    return d.bodyB.position.x;
+                }
+                else {
+                    return d.pointB.x;
+                }
             })
             .attr("y2", function (d) {
-                return d.bodyB.position.y;
+                if(d.bodyB) {
+                    return d.bodyB.position.y;
+                }
+                else {
+                    return d.pointB.y;
+                }
             });
 
         data.exit().remove();
