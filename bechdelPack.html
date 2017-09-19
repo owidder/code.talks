@@ -42,12 +42,14 @@
 <body>
 
 <div id="svgcanvas"></div>
+<h1>Bechdel Test</h1>
 <div class="switch">
     <label>
         <input type="checkbox" id="forceMatterSwitch" onchange="switchMatter()">
         <span class="lever"></span>
     </label>
 </div>
+<h3 id="sort"></h3>
 
 <script>
 
@@ -63,6 +65,8 @@
 
     const quota = util.getHashParam("q", "100");
     const sortAttribute = util.getHashParam("sort", "");
+    const formatFlag = util.getHashParam("f", "");
+
     var width = window.innerWidth;
     var height = window.innerHeight;
 
@@ -77,9 +81,20 @@
         Matter.World.add(engine.world, [newBody]);
     }
 
+    function showSortAttribute(d) {
+        if(!_.isEmpty(sortAttribute)) {
+            const value = d.data[sortAttribute];
+            const formatted = _.isEmpty(formatFlag) ? value : d3.format(",d")(Number(value));
+            document.querySelector("#sort").innerHTML = sortAttribute + ": " + formatted;
+        }
+    }
+
     function addBodiesRecursive(data, index) {
         setTimeout(function () {
             const d = data[index];
+
+            showSortAttribute(d);
+
             const circleBody = Matter.Bodies.circle(d.outerX, d.outerY, d.r+2, {
                 isStatic: false
             });
@@ -93,7 +108,7 @@
             }
             setTimeout(function () {
                 switchToStatic(d);
-            }, 10000);
+            }, 15000);
         }, 10);
     }
 
