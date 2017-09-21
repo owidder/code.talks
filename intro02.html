@@ -10,7 +10,6 @@
 <style>
 
     circle {
-        fill: green;
         stroke: black;
         stroke-width: 2px;
         opacity: .5;
@@ -32,9 +31,9 @@
 
     const selection = d3.selectAll("circle")
         .data([
-            {name:"a", x:100, y:100, r:20},
-            {name:"b", x:100, y:600, r:30},
-            {name:"c", x:600, y:600, r:40}
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:600, r:30, color:"orange"},
+            {name:"c", x:600, y:600, r:40, color:"red"}
         ]);
 
     selection
@@ -46,6 +45,9 @@
         })
         .attr("r", function (d) {
             return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
         })
 
 </script>
