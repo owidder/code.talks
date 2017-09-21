@@ -25,12 +25,13 @@
 
 <body>
 
+<h1></h1>
 <script>
 
     /* global Matter */
 
     const engine = Matter.Engine.create();
-    runner = Matter.Engine.run(engine);
+    Matter.Engine.run(engine);
 
     const body = Matter.Bodies.circle(100, 100, 10, {
         isStatic: false
@@ -39,7 +40,7 @@
     Matter.World.add(engine.world, [body]);
 
     Matter.Events.on(engine, "afterUpdate", function () {
-        console.log(body.position.y);
+        document.querySelector("h1").innerHTML = body.position.y;
     });
 
 </script>

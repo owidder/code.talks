@@ -34,9 +34,6 @@
 </style>
 <body>
 <div id="svgcanvas"></div>
-<h1 id="title"></h1>
-<a class="btn-floating btn-large waves-effect waves-light blue"onclick="politbarometer.next()" ><i class="material-icons">skip_previous</i></a>
-<a class="btn-floating btn-large waves-effect waves-light blue"onclick="politbarometer.prev()" ><i class="material-icons">skip_next</i></a>
 
 <script>
 
@@ -45,122 +42,53 @@
     /* global bottle */
 
     const Svg = bottle.container.Svg;
-    const Politbarometer = bottle.container.Politbarometer;
 
     var width = window.innerWidth;
     var height = window.innerHeight;
 
-    const g = (new Svg("#svgcanvas", width, height)).drawingG;
-
-    var BAR_OFFSET = width/2;
-    var BAR_WIDTH = 40;
-    var BAR_GAP = 5;
-    var START_HEIGHT = 50;
-
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    function _height(d) {
-        return isNaN(d.grade) ? 0 : d.grade * 200;
-    }
+    const g = (new Svg("#svgcanvas", width, height)).drawingG;
 
-    function _x(index) {
-        return index * (BAR_WIDTH + BAR_GAP) + BAR_OFFSET;
-    }
+    /************** 1 *****************/
 
-    function drawBars(data) {
+    const selection1 = g.selectAll("rect")
+        .data([{id: 1, rank:0, value: 5}, {id: 2, rank:1, value: 8}, {id: 3, rank:2, value: 2}]);
 
-        document.querySelector("h1#title").innerHTML = data[0].date;
+    console.log("selection1");
+    console.log(selection1);
 
-        /////////////////////////////////
-        // SELECT
-        /////////////////////////////////
+    selection1.enter()
+        .append("rect")
+        .attr("x", function (d) {
+            return width/4 + d.rank * 100;
+        })
+        .attr("y", function (d) {
+            return height - d.value*50;
+        })
+        .attr("width", 80)
+        .attr("height", function (d) {
+            return d.value * 50;
+        })
+        .style("fill", function (d) {
+            return color(d.id);
+        });
 
-        const rectSelectionWithData = g.selectAll("rect.bar")
-            .data(data, function (d) {
-                return d.name;
-            });
+    /************** 2 *****************/
 
-        const textSelectionWithData = g.selectAll("text.bar")
-            .data(data, function (d) {
-                return d.name;
-            });
+    const selection2 = g.selectAll("rect")
+        .data([{id: 1, rank:0, value: 9}, {id: 2, rank:1, value: 3}, {id: 3, rank:2, value: 4}]);
 
-        /////////////////////////////////
-        // ENTER
-        /////////////////////////////////
+    console.log("selection2");
+    console.log(selection2);
 
-        // rect
-        rectSelectionWithData.enter()
-            .append("rect")
-            .attr("class", "bar forlegend")
-            .attr("width", BAR_WIDTH)
-            .style("fill", function (d) {
-                return color(d.name);
-            })
-            .attr("x", function (d) {
-                return _x(data.indexOf(d));
-            })
-            .attr("height", START_HEIGHT)
-            .attr("y", 500 - START_HEIGHT);
-
-        // text
-        textSelectionWithData.enter()
-            .append("text")
-            .attr("class", "bar")
-            .text(function (d) {
-                return d.name;
-            })
-            .attr("transform", function (d) {
-                var x = _x(data.indexOf(d));
-                return "translate(" + x + ",510) rotate(90)";
-            });
-
-        /////////////////////////////////
-        // UPDATE
-        /////////////////////////////////
-
-        // rect
-        d3.selectAll("rect.bar")
-            .transition()
-            .duration(1000)
-            .attr("x", function (d) {
-                return _x(data.indexOf(d));
-            })
-            .attr("_legend", function (d) {
-                return d.name + ": " + d.grade;
-            })
-            .attr("height", _height)
-            .attr("y", function (d) {
-                return 500 - _height(d);
-            });
-
-        // text
-        d3.selectAll("text.bar")
-            .transition()
-            .duration(1000)
-            .attr("transform", function (d) {
-                var x = _x(data.indexOf(d));
-                return "translate(" + x + ",510) rotate(90)";
-            });
-
-        /////////////////////////////////
-        // EXIT
-        /////////////////////////////////
-
-        rectSelectionWithData.exit()
-            .transition()
-            .duration(1000)
-            .attr("height", 0)
-            .attr("y", 500)
-            .remove();
-
-        textSelectionWithData.exit().remove();
-    }
-
-    const politbarometer = new Politbarometer(drawBars);
-    politbarometer.ready.then(function () {
-        politbarometer.next();
-    });
+    selection2
+        .attr("y", function (d) {
+            return height - d.value*50;
+        })
+        .attr("height", function (d) {
+            return d.value * 50;
+        });
 
 </script>
 </body>

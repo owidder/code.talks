@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <title>Start</title>
 
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/js-url/url.js"></script>
     <script src="node_modules/d3/build/d3.js"></script>
     <script src="node_modules/matter-js/build/matter.js"></script>
     <script src="node_modules/lodash/lodash.js"></script>
 
+    <script src="node_modules/bottlejs/dist/bottle.js"></script>
+    <script>const bottle = new Bottle();</script>
+    <script src="js/util/util.js"></script>
     <script src="js/matterD3Renderer.js"></script>
 
     <style>
@@ -21,6 +26,9 @@
 <div id="svgcanvas"></div>
 
 <script>
+    const util = bottle.container.util;
+    const stiffness = util.getHashParam("s", "1");
+
     const width = window.innerWidth;
     const height = window.innerHeight;
 
@@ -49,12 +57,12 @@
         const circle = Matter.Bodies.circle(x, y, 8, {
             isStatic: false, color: "blue"
         });
-        const constraint = Matter.Constraint.create({bodyA: circle, pointB: {x: width/2, y:height/2}, length: 100, stiffness: 0.0005, render: {
-            lineWidth: 1
-        }});
-        Matter.World.add(engine.world, [constraint]);
-
-        Matter.World.add(engine.world, [circle]);
+        const constraint = Matter.Constraint.create({bodyA: circle, pointB: {x: width/2, y:height/2},
+            length: 100,
+            stiffness: Number(stiffness),
+            render: {lineWidth: 1}
+        });
+        Matter.World.add(engine.world, [circle, constraint]);
     }
 </script>
 

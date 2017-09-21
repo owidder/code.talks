@@ -14,19 +14,9 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
     }
 
     function createPathFromBody(d) {
-        var pathStr = "";
-        if(d.vertices.length > 0) {
-            pathStr += "M" + d.vertices[0].x + " " + d.vertices[0].y;
-            if(d.vertices.length > 1) {
-                var i;
-                for(i = 1; i < d.vertices.length; i++) {
-                    pathStr += " L" + d.vertices[i].x + " " + d.vertices[i].y;
-                }
-            }
-        }
-        pathStr += " Z";
-
-        return pathStr;
+        return "M " + d.vertices.map(function (v) {
+                return v.x + " " + v.y;
+            }).join(" L") + " Z";
     }
 
     function createClassNameFromBody(d) {
@@ -139,7 +129,12 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
 
 
         _gBodies.selectAll("path.dynamic")
-            .attr("d", createPathFromBody);
+            .attr("d", function (d) {
+                const path = "M " + d.vertices.map(function (v) {
+                        return v.x + " " + v.y;
+                    }).join(" L") + " Z";
+                return path;
+            });
 
         data.exit().remove();
     }

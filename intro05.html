@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" media="screen,projection"/>
+<link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+<link rel="stylesheet" type="text/css" href="css/legend.css">
+
+<script src="node_modules/d3/build/d3.js"></script>
+
+<style>
+
+    circle {
+        fill: green;
+        stroke: black;
+        stroke-width: 2px;
+        opacity: .5;
+    }
+
+</style>
+<body>
+<div id="svgcanvas">
+    <svg height="1000" width="1000">
+        <circle cx="300" cy="300" r="5"></circle>
+        <circle cx="300" cy="300" r="5"></circle>
+        <circle cx="300" cy="300" r="5"></circle>
+    </svg>
+</div>
+
+<script>
+
+    /* global d3 */
+
+    const selection = d3.selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20},
+            {name:"b", x:100, y:600, r:30},
+            {name:"c", x:600, y:600, r:40}
+        ]);
+
+    selection
+        .transition()
+        .duration(5000)
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        });
+
+    setTimeout(function () {
+        const selection = d3.select("svg").selectAll("circle")
+            .data([
+                {name:"c", x:100, y:100, r:20},
+                {name:"a", x:100, y:600, r:30},
+                {name:"d", x:600, y:100, r:100},
+                {name:"b", x:600, y:600, r:40}
+            ], function (d) {
+                return d.name;
+            });
+
+        selection.enter()
+            .append("circle")
+            .attr("cx", 300)
+            .attr("cy", 300)
+            .attr("r", 5);
+
+        d3.selectAll("circle")
+            .transition()
+            .duration(5000)
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            });
+    }, 8000);
+
+</script>
+</body>
+</html>
