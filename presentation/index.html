@@ -23,6 +23,12 @@
             background: white;
         }
 
+        span.old {
+            opacity: .5;
+            font-weight: lighter;
+            color: lightgrey;
+        }
+
         circle {
             fill: white;
             stroke: black;
@@ -33,6 +39,7 @@
         pre.new {
             background-color: lightgoldenrodyellow;
         }
+
     </style>
 
     <link rel="stylesheet" type="text/css" href="../node_modules/materialize-css/dist/css/materialize.css"
@@ -85,52 +92,36 @@
             </pre>
         </section>
         <section>
-            <a onclick="step1()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+            <a onclick="step01()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg01" height="600" width="1000">
                 <circle cx="500" cy="300" r="10"></circle>
                 <circle cx="500" cy="300" r="10"></circle>
                 <circle cx="500" cy="300" r="10"></circle>
             </svg>
-            <script>
-                function step1() {
-                    var svg = d3.select("#svg01");
-                    const selection = svg.selectAll("circle")
-                        .data([
-                            {name: "a", x: 100, y: 100, r: 20, color: "blue"},
-                            {name: "b", x: 100, y: 400, r: 30, color: "orange"},
-                            {name: "c", x: 600, y: 400, r: 40, color: "red"}
-                        ]);
-
-                    console.log(document.querySelectorAll("#svg01 circle"));
-                }
-            </script>
+            <script src="step01.js"></script>
         </section>
 
 <!--
-        Using the data to manipulate the DOM<br>
+        Using the data to manipulate the DOM elements<br>
         AKA "Update"
 -->
 
         <section class="title" data-transition="zoom">
-            Using the data to manipulate the DOM<br>
+            Using the data to manipulate the DOM elements<br>
             AKA "Update"
         </section>
 
         <section>
-            <pre>
+            <pre class="stretch">
                 <code data-trim data-noescape>
-    const selection = d3.selectAll("circle")
+    <span class="old">const selection = d3.selectAll("circle")
         .data([
             {name: "a", x: 100, y: 100, r: 20, color: "blue"},
             {name: "b", x: 100, y: 400, r: 30, color: "orange"},
             {name: "c", x: 600, y: 400, r: 40, color: "red"}
-        ]);
-                </code>
-            </pre>
+        ]);</span>
 
-            <pre class="new">
-                <code data-trim data-noescape>
     selection
         .attr("cx", function (d) {
             return d.x;
@@ -148,7 +139,7 @@
             </pre>
         </section>
         <section>
-            <a onclick="step2()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+            <a onclick="step02()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg02" height="600" width="1000">
                 <circle cx="500" cy="300" r="10"></circle>
@@ -156,31 +147,7 @@
                 <circle cx="500" cy="300" r="10"></circle>
             </svg>
 
-            <script>
-                function step2() {
-                    var svg = d3.select("#svg02");
-                    const selection = svg.selectAll("circle")
-                        .data([
-                            {name: "a", x: 100, y: 100, r: 20, color: "blue"},
-                            {name: "b", x: 100, y: 400, r: 30, color: "orange"},
-                            {name: "c", x: 600, y: 400, r: 40, color: "red"}
-                        ]);
-
-                    selection
-                        .attr("cx", function (d) {
-                            return d.x;
-                        })
-                        .attr("cy", function (d) {
-                            return d.y;
-                        })
-                        .attr("r", function (d) {
-                            return d.r;
-                        })
-                        .style("fill", function (d) {
-                            return d.color;
-                        })
-                }
-            </script>
+            <script src="step02.js"></script>
         </section>
 
         <!--
@@ -221,7 +188,7 @@
         </section>
 
         <section>
-            <a onclick="step3()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+            <a onclick="step03()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg03" height="600" width="1000">
                 <circle cx="500" cy="300" r="10"></circle>
@@ -229,33 +196,7 @@
                 <circle cx="500" cy="300" r="10"></circle>
             </svg>
 
-            <script>
-                function step3() {
-                    var svg = d3.select("#svg03");
-                    const selection = svg.selectAll("circle")
-                        .data([
-                            {name: "a", x: 100, y: 100, r: 20, color: "blue"},
-                            {name: "b", x: 100, y: 400, r: 30, color: "orange"},
-                            {name: "c", x: 600, y: 400, r: 40, color: "red"}
-                        ]);
-
-                    selection
-                        .transition()
-                        .duration(5000)
-                        .attr("cx", function (d) {
-                            return d.x;
-                        })
-                        .attr("cy", function (d) {
-                            return d.y;
-                        })
-                        .attr("r", function (d) {
-                            return d.r;
-                        })
-                        .style("fill", function (d) {
-                            return d.color;
-                        })
-                }
-            </script>
+            <script src="step03.js"></script>
         </section>
 
         <!--
@@ -269,7 +210,7 @@
         <section>
             <pre class="stretch">
                 <code data-trim data-noescape>
-    const selection = d3.selectAll("circle")
+    <span class="old">const selection = d3.selectAll("circle")
         .data([
             {name:"a", x:100, y:100, r:20, color:"blue"},
             {name:"b", x:100, y:400, r:30, color:"orange"},
@@ -290,7 +231,7 @@
         })
         .style("fill", function (d) {
             return d.color;
-        })
+        })</span>
 
     setTimeout(function () {
         const selection = d3.selectAll("circle")
@@ -324,7 +265,7 @@
         </section>
 
         <section>
-            <a onclick="step4()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+            <a onclick="step04()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg04" height="600" width="1000">
                 <circle cx="500" cy="300" r="10"></circle>
@@ -332,61 +273,7 @@
                 <circle cx="500" cy="300" r="10"></circle>
             </svg>
 
-            <script>
-                function step4() {
-                    var svg = d3.select("#svg04");
-                    const selection = svg.selectAll("circle")
-                        .data([
-                            {name:"a", x:100, y:100, r:20, color:"blue"},
-                            {name:"b", x:100, y:400, r:30, color:"orange"},
-                            {name:"c", x:600, y:400, r:40, color:"red"}
-                        ]);
-
-                    selection
-                        .transition()
-                        .duration(5000)
-                        .attr("cx", function (d) {
-                            return d.x;
-                        })
-                        .attr("cy", function (d) {
-                            return d.y;
-                        })
-                        .attr("r", function (d) {
-                            return d.r;
-                        })
-                        .style("fill", function (d) {
-                            return d.color;
-                        })
-
-                    setTimeout(function () {
-                        const selection = svg.selectAll("circle")
-                            .data([
-                                {name:"c", x:100, y:100, r:80, color:"grey"},
-                                {name:"a", x:100, y:400, r:10, color:"yellow"},
-                                {name:"b", x:400, y:400, r:60, color:"cyan"}
-                            ], function (d) {
-                                return d.name;
-                            });
-
-                        selection
-                            .transition()
-                            .duration(5000)
-                            .attr("cx", function (d) {
-                                return d.x;
-                            })
-                            .attr("cy", function (d) {
-                                return d.y;
-                            })
-                            .attr("r", function (d) {
-                                return d.r;
-                            })
-                            .style("fill", function (d) {
-                                return d.color;
-                            })
-
-                    }, 8000);
-                }
-            </script>
+            <script src="step04.js"></script>
         </section>
 
         <!--
@@ -402,7 +289,7 @@
         <section>
             <pre class="stretch">
                 <code data-trim data-noescape>
-    const selection = d3.selectAll("circle")
+    <span class="old">const selection = d3.selectAll("circle")
         .data([
             {name:"a", x:100, y:100, r:20, color:"blue"},
             {name:"b", x:100, y:400, r:30, color:"orange"},
@@ -423,7 +310,7 @@
         })
         .style("fill", function (d) {
             return d.color;
-        })
+        })</span>
 
     setTimeout(function () {
         const selection = d3.selectAll("circle")
@@ -436,7 +323,13 @@
                 return d.name;
             });
 
-        selection
+        <mark class="my">selection.enter()</mark>
+            <mark class="my">.append("circle")</mark>
+            <mark class="my">.attr("cx", 500)</mark>
+            <mark class="my">.attr("cy", 300)</mark>
+            <mark class="my">.attr("r", 10);</mark>
+
+        <mark class="my">d3.selectAll("circle")</mark>
             .transition()
             .duration(5000)
             .attr("cx", function (d) {
@@ -458,69 +351,15 @@
         </section>
 
         <section>
-            <a onclick="step4()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+            <a onclick="step05()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
-            <svg id="svg04" height="600" width="1000">
+            <svg id="svg05" height="600" width="1000">
                 <circle cx="500" cy="300" r="10"></circle>
                 <circle cx="500" cy="300" r="10"></circle>
                 <circle cx="500" cy="300" r="10"></circle>
             </svg>
 
-            <script>
-                function step4() {
-                    var svg = d3.select("#svg04");
-                    const selection = svg.selectAll("circle")
-                        .data([
-                            {name:"a", x:100, y:100, r:20, color:"blue"},
-                            {name:"b", x:100, y:400, r:30, color:"orange"},
-                            {name:"c", x:600, y:400, r:40, color:"red"}
-                        ]);
-
-                    selection
-                        .transition()
-                        .duration(5000)
-                        .attr("cx", function (d) {
-                            return d.x;
-                        })
-                        .attr("cy", function (d) {
-                            return d.y;
-                        })
-                        .attr("r", function (d) {
-                            return d.r;
-                        })
-                        .style("fill", function (d) {
-                            return d.color;
-                        })
-
-                    setTimeout(function () {
-                        const selection = svg.selectAll("circle")
-                            .data([
-                                {name:"c", x:100, y:100, r:80, color:"grey"},
-                                {name:"a", x:100, y:400, r:10, color:"yellow"},
-                                {name:"b", x:400, y:400, r:60, color:"cyan"}
-                            ], function (d) {
-                                return d.name;
-                            });
-
-                        selection
-                            .transition()
-                            .duration(5000)
-                            .attr("cx", function (d) {
-                                return d.x;
-                            })
-                            .attr("cy", function (d) {
-                                return d.y;
-                            })
-                            .attr("r", function (d) {
-                                return d.r;
-                            })
-                            .style("fill", function (d) {
-                                return d.color;
-                            })
-
-                    }, 8000);
-                }
-            </script>
+            <script src="step05.js"></script>
         </section>
 
 
