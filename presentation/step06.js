@@ -1,5 +1,5 @@
-function step05() {
-    var svg = d3.select("#svg05");
+function step06() {
+    const svg = d3.select("#svg06");
     const selection = svg.selectAll("circle")
         .data([
             {name:"a", x:100, y:100, r:20, color:"blue"},
@@ -7,7 +7,13 @@ function step05() {
             {name:"c", x:600, y:400, r:40, color:"red"}
         ]);
 
-    selection
+    selection.enter()
+        .append("circle")
+        .attr("cx", 500)
+        .attr("cy", 300)
+        .attr("r", 5);
+
+    svg.selectAll("circle")
         .transition()
         .duration(5000)
         .attr("cx", function (d) {
@@ -55,5 +61,6 @@ function step05() {
             .style("fill", function (d) {
                 return d.color;
             })
+
     }, 8000);
 }
