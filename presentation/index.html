@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>D3 in 15 minutes</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <style>
+        svg {
+            background: white;
+        }
+
+        mark.my {
+            background: lightgrey;
+            font-weight: bolder;
+        }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../node_modules/materialize-css/dist/css/materialize.css"
+          media="screen,projection"/>
+    <link rel="stylesheet" type="text/css" href="../css/material-icons.css"/>
+
+    <script src="../node_modules/d3/build/d3.js"></script>
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    const selection = d3.selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:400, r:30, color:"orange"},
+            {name:"c", x:600, y:400, r:40, color:"red"}
+        ]);
+
+    console.log(document.querySelectorAll("circle"))
+                </code>
+            </pre>
+        </section>
+        <section>
+            <a onclick="step1()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+                    class="material-icons">play_arrow</i></a>
+            <svg id="svg01" height="600" width="1000">
+                <circle></circle>
+                <circle></circle>
+                <circle></circle>
+            </svg>
+            <script>
+                function step1() {
+                    var svg = d3.select("#svg01");
+                    const selection = svg.selectAll("circle")
+                        .data([
+                            {name: "a", x: 100, y: 100, r: 20, color: "blue"},
+                            {name: "b", x: 100, y: 400, r: 30, color: "orange"},
+                            {name: "c", x: 600, y: 400, r: 40, color: "red"}
+                        ]);
+
+                    console.log(document.querySelectorAll("#svg01 circle"));
+                }
+            </script>
+        </section>
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    const selection = d3.selectAll("circle")
+        .data([
+            {name: "a", x: 100, y: 100, r: 20, color: "blue"},
+            {name: "b", x: 100, y: 400, r: 30, color: "orange"},
+            {name: "c", x: 600, y: 400, r: 40, color: "red"}
+        ]);
+
+    selection
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+                </code>
+            </pre>
+        </section>
+        <section>
+            <a onclick="step2()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+                    class="material-icons">play_arrow</i></a>
+            <svg id="svg02" height="600" width="1000">
+                <circle></circle>
+                <circle></circle>
+                <circle></circle>
+            </svg>
+
+            <script>
+                function step2() {
+                    var svg = d3.select("#svg02");
+                    const selection = svg.selectAll("circle")
+                        .data([
+                            {name: "a", x: 100, y: 100, r: 20, color: "blue"},
+                            {name: "b", x: 100, y: 400, r: 30, color: "orange"},
+                            {name: "c", x: 600, y: 400, r: 40, color: "red"}
+                        ]);
+
+                    selection
+                        .attr("cx", function (d) {
+                            return d.x;
+                        })
+                        .attr("cy", function (d) {
+                            return d.y;
+                        })
+                        .attr("r", function (d) {
+                            return d.r;
+                        })
+                        .style("fill", function (d) {
+                            return d.color;
+                        })
+                }
+            </script>
+        </section>
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    const selection = d3.selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:400, r:30, color:"orange"},
+            {name:"c", x:600, y:400, r:40, color:"red"}
+        ]);
+
+    selection
+        <mark class="my">.transition()</mark>
+        <mark>.duration(5000)</mark>
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+                </code>
+            </pre>
+        </section>
+    </div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+    // More info about config & dependencies:
+    // - https://github.com/hakimel/reveal.js#configuration
+    // - https://github.com/hakimel/reveal.js#dependencies
+    Reveal.initialize({
+        dependencies: [
+            {src: 'plugin/markdown/marked.js'},
+            {src: 'plugin/markdown/markdown.js'},
+            {src: 'plugin/notes/notes.js', async: true},
+            {
+                src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            }
+        ]
+    });
+
+    Reveal.initialize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        margin: 0
+    });
+</script>
+</body>
+</html>
