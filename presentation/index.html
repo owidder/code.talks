@@ -21,6 +21,13 @@
             background: lightgrey;
             font-weight: bolder;
         }
+
+        circle {
+            fill: white;
+            stroke: black;
+            stroke-width: 2px;
+            opacity: .5;
+        }
     </style>
 
     <link rel="stylesheet" type="text/css" href="../node_modules/materialize-css/dist/css/materialize.css"
@@ -41,9 +48,26 @@
 <body>
 <div class="reveal">
     <div class="slides">
+
+<!--
+        Adding data to DOM elements
+-->
+
+        <section class="title" data-transition="zoom">
+            Adding data to DOM elements
+        </section>
+
         <section>
+            <pre><code>
+            <svg id="svg01" height="600" width="1000">
+                <circle cx="400" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="600" cy="300" r="10"></circle>
+            </svg>
+            </code></pre>
             <pre class="stretch">
                 <code data-trim data-noescape>
+
     const selection = d3.selectAll("circle")
         .data([
             {name:"a", x:100, y:100, r:20, color:"blue"},
@@ -59,9 +83,9 @@
             <a onclick="step1()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg01" height="600" width="1000">
-                <circle></circle>
-                <circle></circle>
-                <circle></circle>
+                <circle cx="400" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="600" cy="300" r="10"></circle>
             </svg>
             <script>
                 function step1() {
@@ -77,6 +101,15 @@
                 }
             </script>
         </section>
+
+<!--
+        Using the data to manipulate the DOM
+-->
+
+        <section class="title" data-transition="zoom">
+            Using the data to manipulate the DOM
+        </section>
+
         <section>
             <pre class="stretch">
                 <code data-trim data-noescape>
@@ -107,9 +140,9 @@
             <a onclick="step2()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg02" height="600" width="1000">
-                <circle></circle>
-                <circle></circle>
-                <circle></circle>
+                <circle cx="400" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="600" cy="300" r="10"></circle>
             </svg>
 
             <script>
@@ -177,6 +210,10 @@
     // - https://github.com/hakimel/reveal.js#configuration
     // - https://github.com/hakimel/reveal.js#dependencies
     Reveal.initialize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        margin: 0,
+        transition: 'slide', // default/cube/page/concave/zoom/linear/fade/none
         dependencies: [
             {src: 'plugin/markdown/marked.js'},
             {src: 'plugin/markdown/markdown.js'},
@@ -187,12 +224,6 @@
             }
             }
         ]
-    });
-
-    Reveal.initialize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-        margin: 0
     });
 </script>
 </body>
