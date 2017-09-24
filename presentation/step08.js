@@ -11,9 +11,8 @@ function step08() {
             .append("circle")
             .attr("cx", 500)
             .attr("cy", 300)
-            .attr("r", 5);
-
-        svg.selectAll("circle")
+            .attr("r", 5)
+            .merge(selection)
             .transition()
             .duration(2000)
             .attr("cx", function (d) {

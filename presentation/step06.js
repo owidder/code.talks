@@ -11,9 +11,8 @@ function step06() {
         .append("circle")
         .attr("cx", 500)
         .attr("cy", 300)
-        .attr("r", 5);
-
-    svg.selectAll("circle")
+        .attr("r", 5)
+        .merge(selection)
         .transition()
         .duration(5000)
         .attr("cx", function (d) {
@@ -40,13 +39,13 @@ function step06() {
                 return d.name;
             });
 
-        selection.enter()
+        const newElements = selection.enter()
             .append("circle")
             .attr("cx", 500)
             .attr("cy", 300)
             .attr("r", 5);
 
-        svg.selectAll("circle")
+        newElements.merge(selection)
             .transition()
             .duration(5000)
             .attr("cx", function (d) {

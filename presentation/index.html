@@ -335,13 +335,13 @@
                 return d.name;
             });
 
-        <mark class="my">selection.enter()</mark>
+        <mark class="my">const newElements = selection.enter()</mark>
             <mark class="my">.append("circle")</mark>
             <mark class="my">.attr("cx", 500)</mark>
             <mark class="my">.attr("cy", 300)</mark>
             <mark class="my">.attr("r", 10);</mark>
 
-        <mark class="my">d3.selectAll("circle")</mark>
+        <mark class="my">newElements.merge(selection)</mark>
             .transition()
             .duration(5000)
             .attr("cx", function (d) {
@@ -402,11 +402,10 @@
 
     selection.enter()
         .append("circle")
-        .attr("cx", 300)
-        .attr("cy", 500)
-        .attr("r", 5);
-
-    d3.selectAll("circle")
+        .attr("cx", 500)
+        .attr("cy", 300)
+        .attr("r", 5)
+        .merge(selection)
         <span class="old">.transition()
         .duration(5000)
         .attr("cx", function (d) {
@@ -433,13 +432,13 @@
                 return d.name;
             });
 
-        selection.enter()
+        const newElements = selection.enter()
             .append("circle")
-            .attr("cx", 300)
-            .attr("cy", 500)
+            .attr("cx", 500)
+            .attr("cy", 300)
             .attr("r", 5);
 
-        d3.selectAll("circle")
+        newElements.merge(selection)
             .transition()
             .duration(5000)
             .attr("cx", function (d) {
@@ -491,11 +490,10 @@
 
     selection.enter()
         .append("circle")
-        .attr("cx", 300)
+        .attr("cx", 500)
         .attr("cy", 300)
-        .attr("r", 5);
-
-    d3.selectAll("circle")
+        .attr("r", 5)
+        .merge(selection)
         .transition()
         .duration(5000)
         .attr("cx", function (d) {
@@ -521,13 +519,13 @@
                 return d.name;
             });
 
-        selection.enter()
+        const newElements = selection.enter()
             .append("circle")
-            .attr("cx", 300)
+            .attr("cx", 500)
             .attr("cy", 300)
             .attr("r", 5);
 
-        d3.selectAll("circle")
+        newElements.merge(selection)
             .transition()
             .duration(5000)
             .attr("cx", function (d) {
@@ -577,6 +575,67 @@
             Enter<br>
             Update<br>
             Exit<br>
+        </section>
+
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    function draw(data) {
+        const selection = svg.selectAll("circle")
+            .data(data, function (d) {
+                return d.name;
+            });
+
+        selection.enter()
+            .append("circle")
+            .attr("cx", 500)
+            .attr("cy", 300)
+            .attr("r", 5)
+            .merge(selection)
+            .transition()
+            .duration(2000)
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            })
+            .style("fill", function (d) {
+                return d.color;
+            });
+
+        selection.exit()
+            .transition()
+            .duration(500)
+            .attr("r", 0)
+            .style("opacity", 0)
+            .remove();
+    }
+
+    const color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    setInterval(function () {
+        const data = [];
+        _.range(20).forEach(function(i) {
+            if(_.random(0, 9) > 0) {
+                data.push({
+                    name: i,
+                    x: _.random(0, 1000),
+                    y: _.random(0, 600),
+                    r: _.random(5, 50),
+                    color: color(i)
+                });
+            }
+        });
+
+        draw(data);
+    }, 2000);
+
+                </code>
+            </pre>
         </section>
 
         <section>
