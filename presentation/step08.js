@@ -31,7 +31,7 @@ function step08() {
 
         selection.exit()
             .transition()
-            .duration(2000)
+            .duration(500)
             .attr("r", 0)
             .style("opacity", 0)
             .remove();
