@@ -884,6 +884,83 @@ selection.exit().remove();
             <script src="matterDemo.js"></script>
             <script>matterDemo(800, 500)</script>
         </section>
+
+        <section class="title" data-transition="zoom">
+            <a href="../introBo.html#&date=2016-12-16" target="_blank">Back to Box Office Weekend Gross</a>
+        </section>
+
+        <section >
+            <a href="../introBoMatter01.html#&date=2016-12-16" target="_blank">Ein etwas spektakulärerer Abgang (die Physik macht's möglich)</a>
+
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        rectSelectionWithData.exit()
+            .each(function (d) {
+                const bodyX = _x(d.i) + BAR_WIDTH / 2;
+                const bodyY = d.y + d.height / 2;
+
+                const rectBody = Matter.Bodies.rectangle(bodyX, bodyY, BAR_WIDTH, d.height, {
+                    isStatic: false, __data: d, color: color(d.title), className: "matter forlegend",
+                    _legend: legend(d), title: d.title
+                });
+
+                Matter.World.add(engine.world, [rectBody]);
+
+            })
+            .remove();
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <a href="../introBoMatter02.html#&date=2016-12-16" target="_blank">Jetzt auch mit Boden</a>
+
+            <pre>
+                <code data-trim data-noescape>
+        var rect = Matter.Bodies.rectangle(width / 2, height+5, width, 50, {
+            isStatic: true, color: "grey", className: "matter"
+        });
+
+        Matter.World.add(engine.world, [rect]);
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <a href="../introBoMatter.html#&date=2016-12-16" target="_blank">... und noch spektakulärer</a>
+
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        <span class="old">rectSelectionWithData.exit()
+            .each(function (d) {
+                const x = _x(d.i);
+                const bodyX = x + BAR_WIDTH / 2;
+                const bodyY = d.y + d.height / 2;
+
+                const rectBody = Matter.Bodies.rectangle(bodyX, bodyY, BAR_WIDTH, d.height, {
+                    isStatic: false, __data: d, color: color(d.title), className: "matter forlegend",
+                    _legend: legend(d), title: d.title
+                });</span>
+
+                const circleBody = Matter.Bodies.circle(x + 10, BAR_OFFSET_Y + 100, 2, {
+                    isStatic: true, color: "grey", className: "matter"
+                });
+
+                Matter.World.add(engine.world, [rectBody, circleBody]);
+
+                setTimeout(function () {
+                    Matter.World.remove(engine.world, circleBody);
+                }, 3000);
+
+                <span class="old">setTimeout(function () {
+                    Matter.World.remove(engine.world, rectBody);
+                }, 20000)
+            })
+            .remove();</span>
+                </code>
+            </pre>
+        </section>
+
     </div>
 </div>
 
