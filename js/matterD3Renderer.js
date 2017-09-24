@@ -125,10 +125,8 @@ function MatterD3Renderer(_engine, _gBodies, width, height, _gConstraints) {
             })
             .style("stroke-width", function(d) {
                 return d.strokeWidth != null ? d.strokeWidth : undefined;
-            });
-
-
-        _gBodies.selectAll("path.dynamic")
+            })
+            .merge(data)
             .attr("d", function (d) {
                 const path = "M " + d.vertices.map(function (v) {
                         return v.x + " " + v.y;

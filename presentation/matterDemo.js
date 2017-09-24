@@ -1,5 +1,5 @@
 function matterDemo(width, height) {
-    const  svg = d3.select("#matterdemo")
+    const svg = d3.select("svg.matterdemo")
         .on("click", function () {
             const evt = d3.mouse(this);
             createCircle(evt[0], evt[1]);
