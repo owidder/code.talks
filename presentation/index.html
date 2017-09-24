@@ -40,6 +40,13 @@
             background-color: lightgoldenrodyellow;
         }
 
+        #svgcanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+
     </style>
 
     <link rel="stylesheet" type="text/css" href="../node_modules/materialize-css/dist/css/materialize.css"
@@ -52,8 +59,16 @@
     <script>const bottle = new Bottle();</script>
     <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src="../node_modules/js-url/url.js"></script>
+    <script src="../node_modules/matter-js/build/matter.js"></script>
 
     <script src="../js/util/util.js"></script>
+    <script src="../js/util/svgUtil.js"></script>
+    <script src="../js/util/SimplePromise.js"></script>
+    <script src="../js/legend.js"></script>
+    <script src="../js/svg.js"></script>
+    <script src="../js/bo.js"></script>
+    <script src="../js/Engine.js"></script>
+    <script src="../js/matterD3Renderer.js"></script>
 
     <!-- Printing and PDF exports -->
     <script>
@@ -68,17 +83,35 @@
 
 <script>
     const util = bottle.container.util;
+    const Engine = bottle.container.Engine;
+    window.__p = {};
+    function cleanAfterSlideChanged() {
+        window.__p.engine && Matter.Engine.clear(window.__p.engine.world);
+    }
 </script>
 
 <div class="reveal">
     <div class="slides">
 
-<!--
-            Daten zu DOM-Elementen hinzufügen
--->
+        <section class="title">
+            <img src="d3.png">
+        </section>
+        <!--
+                    D3
+        -->
 
         <section class="title" data-transition="zoom">
-            Daten zu DOM-Elementen hinzufügen
+            Data<br>
+            Driven<br>
+            Documents<br>
+        </section>
+
+        <!--
+                    Daten zu DOM-Elementen hinzufügen
+        -->
+
+        <section class="title" data-transition="zoom">
+            1. Daten zu DOM-Elementen hinzufügen
         </section>
 
         <section>
@@ -120,7 +153,7 @@
 -->
 
         <section class="title" data-transition="zoom">
-            Attribute der DOM-Elemente ändern<br>
+            2. Attribute der DOM-Elemente ändern<br>
             AKA "Update"
         </section>
 
@@ -167,7 +200,7 @@
 -->
 
         <section class="title" data-transition="zoom">
-            Transitionen
+            3. Transitionen
         </section>
 
         <section>
@@ -294,7 +327,7 @@
 -->
 
         <section class="title" data-transition="zoom">
-            DOM-Elemente erzeugen<br>
+            4. DOM-Elemente erzeugen<br>
             AKA "Enter"
         </section>
 
@@ -380,7 +413,7 @@
 -->
 
         <section class="title" data-transition="zoom">
-            Kleine Anpassung:<br>
+            ... kleine Anpassung:<br>
             Wir beginnen mit einem leeren SVG-Element
         </section>
 
@@ -474,8 +507,7 @@
 -->
 
         <section class="title" data-transition="zoom">
-            Zum Schluss (nicht ganz):<br>
-            Der exit
+            5. Exit
         </section>
 
         <section>
@@ -646,6 +678,141 @@
             <script src="step08.js"></script>
         </section>
 
+        <section class="title" data-transition="zoom">
+            Und jetzt ein echtes Diagram
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <a href="../introBo.html#&date=2016-12-16" target="_blank">Box Office Weekend Gross</a>
+        </section>
+
+        <section class="title">
+            <img src="data.png">
+        </section>
+
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        const rectSelectionWithData = g.selectAll("rect.bar")
+            .data(data, function (d) {
+                return d.title;
+            });
+
+        rectSelectionWithData.enter()
+            .append("rect")
+            .attr("class", "bar forlegend")
+            .attr("width", BAR_WIDTH)
+            .style("fill", function (d) {
+                return color(d.title);
+            })
+            .attr("x", function (d) {
+                return _x(d.i);
+            })
+            .attr("y", _y(0))
+            .merge(rectSelectionWithData)
+            .transition()
+            .duration(1000)
+            .attr("x", function (d) {
+                return _x(d.i);
+            })
+            .attr("_legend", legend)
+            .attr("height", function (d) {
+                return _height(d.wg);
+            })
+            .attr("y", function (d) {
+                return _y(d.wg);
+            });
+
+        rectSelectionWithData.exit().remove();
+
+                </code>
+            </pre>
+        </section>
+
+        <section class="title">
+            <img src="matter.png">
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    const engine = Matter.Engine.create();
+    Matter.Engine.run(engine);
+
+    const body = Matter.Bodies.circle(100, 100, 10, {
+        isStatic: false
+    });
+
+    Matter.World.add(engine.world, [body]);
+
+    Matter.Events.on(engine, "afterUpdate", function () {
+        document.querySelector("h1#matterdemo").innerHTML = body.position.y;
+    });
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1 id="matterdemo"></h1>
+            <a onclick="matterExample()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+                    class="material-icons">play_arrow</i></a>
+            <script src="matterExample.js"></script>
+        </section>
+
+        <section class="title">
+            Matter.js Body enthält die komplette Form als Line-Segmente
+        </section>
+
+        <section class="title">
+            <img src="vertices.png">
+        </section>
+
+        <section class="title">
+            SVG Paths
+        </section>
+
+        <section>
+            <pre><code>
+            <svg width="100" height="100">
+                <path d=" M 10 25 L 10 75 L 60 75 Z"
+                      stroke="black"
+                      stroke-width="3"
+                      fill="none" />
+            </svg>
+            </code></pre>
+            <svg width="100" height="100">
+                <path d=" M 10 25 L 10 75 L 60 75 Z" stroke="black" stroke-width="3" fill="none" />
+            </svg>
+        </section>
+
+        <section>
+            <img src="vertices.png" height="300">
+            <pre><code>
+            <svg width="100" height="100">
+                <path d="M 484.7241983071568 617.8601575689513 L487.23287759867395 613.5997157829022 L491.7665194489434 611.6274887235894 L496.59346509089136 612.6971539841638 L499.8699553553893 616.3997810983425 L500.3444625366909 621.3209576786828 L497.83578324517384 625.5813994647319 L493.3021413949044 627.5536265240447 L488.47519575295655 626.4839612634704 L485.1987054884584 622.7813341492916 Z"
+                      stroke="black"
+                      stroke-width="3"
+                      fill="none" />
+            </svg>
+            </code></pre>
+            <svg width="200" height="100">
+                <path d=" M 84.7241983071568 17.8601575689513 L87.23287759867395 13.5997157829022 L91.7665194489434 11.6274887235894 L96.59346509089136 12.6971539841638 L99.8699553553893 16.3997810983425 L100.3444625366909 21.3209576786828 L97.83578324517384 25.5813994647319 L93.3021413949044 27.5536265240447 L88.47519575295655 26.4839612634704 L85.1987054884584 22.7813341492916 Z"
+                      stroke="black"
+                      stroke-width="3"
+                      fill="none" />
+            </svg>
+        </section>
+
+        <section>
+            Ein D3 Renderer für Matter.js
+        </section>
+
+        <section>
+            <a onclick="matterDemo(800, 500)" class="btn-floating btn-large waves-effect waves-light cyan"><i
+                    class="material-icons">play_arrow</i></a>
+            <svg id="matterdemo" width="800" height="500"></svg>
+            <script src="matterDemo.js"></script>
+        </section>
     </div>
 </div>
 
@@ -682,6 +849,7 @@
     Reveal.addEventListener( 'slidechanged', function( event ) {
         var slideno = event.indexh;
         util.changeHashParam("s", slideno);
+        cleanAfterSlideChanged();
     });
 
 </script>

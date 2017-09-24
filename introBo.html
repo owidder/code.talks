@@ -130,7 +130,7 @@
             });
 
         /////////////////////////////////
-        // ENTER
+        // ENTER + UPDATE
         /////////////////////////////////
 
         /**** bar *****/
@@ -144,27 +144,8 @@
             .attr("x", function (d) {
                 return _x(d.i);
             })
-            .attr("y", _y(0));
-        /**** bar *****/
-
-        // text
-        const textEnter = textSelectionWithData.enter()
-            .append("text")
-            .attr("class", "bar")
-            .text(function (d) {
-                return d.title;
-            })
-            .attr("transform", function (d) {
-                var x = _x(d.i) + BAR_WIDTH / 2;
-                return textTranslate(x, BAR_OFFSET_Y - 10);
-            });
-
-        /////////////////////////////////
-        // UPDATE
-        /////////////////////////////////
-
-        /**** bar *****/
-        d3.selectAll("rect.bar")
+            .attr("y", _y(0))
+            .merge(rectSelectionWithData)
             .transition()
             .duration(1000)
             .attr("x", function (d) {
@@ -180,7 +161,17 @@
         /**** bar *****/
 
         // text
-        d3.selectAll("text.bar")
+        textSelectionWithData.enter()
+            .append("text")
+            .attr("class", "bar")
+            .text(function (d) {
+                return d.title;
+            })
+            .attr("transform", function (d) {
+                var x = _x(d.i) + BAR_WIDTH / 2;
+                return textTranslate(x, BAR_OFFSET_Y - 10);
+            })
+            .merge(textSelectionWithData)
             .transition()
             .duration(1000)
             .attr("transform", function (d) {
