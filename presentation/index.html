@@ -46,6 +46,10 @@
             left: 0;
         }
 
+        line.constraint {
+            stroke: black;
+        }
+
 
     </style>
 
@@ -952,15 +956,75 @@ selection.exit().remove();
                     Matter.World.remove(engine.world, circleBody);
                 }, 3000);
 
-                <span class="old">setTimeout(function () {
+                setTimeout(function () {
                     Matter.World.remove(engine.world, rectBody);
                 }, 20000)
             })
-            .remove();</span>
+            .remove();
                 </code>
             </pre>
         </section>
 
+        <section class="title">
+            Na und?
+        </section>
+
+        <section class="title">
+            Ist ja ganz nett, aber ...
+        </section>
+
+        <section class="title">
+            Zeig doch mal was neues!!!!
+        </section>
+
+        <section>
+            <h1>Alison Bechdel</h1>
+            <img src="bechdel.png" height="500"><br>
+            <small>By Michael Rhode - 101_3633 Alison Bechdel, CC BY 2.0, https://commons.wikimedia.org/w/index.php?curid=20333893</small>
+        </section>
+
+        <section>
+            <h1>Fun Home</h1>
+            <img src="funhome.png" height="500"><br>
+            <small>Fair use, https://en.wikipedia.org/w/index.php?curid=7110859</small>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <a href="../bechdelPack.html" target="_blank">Der Bechdel-Test</a>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Constraints
+        </section>
+
+        <section>
+            <h1>Stiffness = 1</h1>
+            <svg class="constraintsdemo01" width="800" height="500"></svg>
+            <script src="constraintsDemo.js"></script>
+            <script>new ConstraintsDemo("svg.constraintsdemo01", 800, 500, 1, 100)</script>
+        </section>
+
+        <section data-transition="zoom">
+            <h1>Stiffness = 0.01</h1>
+            <svg class="constraintsdemo02" width="800" height="500"></svg>
+            <script src="constraintsDemo.js"></script>
+            <script>new ConstraintsDemo("svg.constraintsdemo02", 800, 500, .01, 100)</script>
+        </section>
+
+        <section data-transition="zoom">
+            <h1>Stiffness = 0.001</h1>
+            <svg class="constraintsdemo03" width="800" height="500"></svg>
+            <script src="constraintsDemo.js"></script>
+            <script>new ConstraintsDemo("svg.constraintsdemo03", 800, 500, .001, 100)</script>
+        </section>
+
+        <section data-transition="zoom">
+            <h1>Stiffness = 0.001</h1>
+            <svg class="constraintsdemo04" width="800" height="500"></svg>
+            <script src="constraintsDemo.js"></script>
+            <script>new ConstraintsDemo("svg.constraintsdemo04", 800, 500, .001, 0, 0, 0)</script>
+            <br>No gravity
+        </section>
     </div>
 </div>
 

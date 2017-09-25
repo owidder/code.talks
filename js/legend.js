@@ -123,7 +123,7 @@ bottle.factory("Legend", function (container) {
                 .attr("width", 100)
                 .attr("height", 100)
                 .attr("stroke", "white")
-                .attr("opacity", 0.8);
+                .attr("opacity", 0.9);
 
             legend.append("text")
                 .attr("class", "legend")
