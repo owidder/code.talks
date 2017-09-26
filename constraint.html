@@ -84,12 +84,6 @@
             render: {lineWidth: 1}
         });
         Matter.World.add(engine.world, [circle, constraint]);
-        const constraint = Matter.Constraint.create({bodyA: circle, pointB: {x: width/2, y:height/2},
-            length: Number(length),
-            stiffness: Number(stiffness),
-            render: {lineWidth: 1}
-        });
-        Matter.World.add(engine.world, [circle, constraint]);
     }
 </script>
 

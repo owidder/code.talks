@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>D3 in 15 minutes</title>
+    <title>D3 in 10 Minuten</title>
 
     <link rel="stylesheet" href="css/reveal.css">
     <link rel="stylesheet" href="css/theme/black.css">
@@ -108,7 +108,7 @@
             <h5 class="timer"></h5>
             D3 in 10 Minuten<br>
             <a onclick="startCountdown()" class="btn-floating btn-large waves-effect waves-light cyan"><i
-                    class="material-icons">play_arrow</i></a>
+                    class="material-icons">timer</i></a>
             <script src="startCountdown.js"></script>
         </section>
 
@@ -724,23 +724,27 @@
             <script src="step08.js"></script>
         </section>
 
-        <section class="title" data-transition="zoom">
-            <h5 class="timer"></h5>
-            Und jetzt ein echtes Diagram
+        <section>
+            Fertig
         </section>
 
         <section class="title" data-transition="zoom">
-            <h5 class="timer"></h5>
-            <a href="../introBo.html#&date=2016-12-16" target="_blank">Box Office Weekend Gross</a>
+            Und jetzt ein echtes Diagramm
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Box Office Weekend Gross<br>
+            <a href="../introBo.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
+
         </section>
 
         <section class="title">
-            <h5 class="timer"></h5>
             <img src="data.png">
         </section>
 
         <section>
-            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
         const rectSelectionWithData = g.selectAll("rect")
@@ -934,11 +938,14 @@ selection.exit().remove();
         </section>
 
         <section class="title" data-transition="zoom">
-            <a href="../introBo.html#&date=2016-12-16" target="_blank">Und nochmal Back to Box Office Weekend Gross</a>
+            Und nochmal Box Office Weekend Gross<br>
+            <a href="../introBo.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
         <section >
-            <a href="../introBoMatter01.html#&date=2016-12-16" target="_blank">Ein etwas spektakulärerer Abgang (die Physik macht's möglich)</a>
+            Ein etwas spektakulärerer Abgang (die Physik macht's möglich)
 
             <pre class="stretch">
                 <code data-trim data-noescape>
@@ -948,8 +955,9 @@ selection.exit().remove();
                 const bodyY = d.y + d.height / 2;
 
                 const rectBody = Matter.Bodies.rectangle(bodyX, bodyY, BAR_WIDTH, d.height, {
-                    isStatic: false, __data: d, color: color(d.title), className: "matter forlegend",
-                    _legend: legend(d), title: d.title
+                    isStatic: false,
+                    color: color(d.title),
+                    title: d.title
                 });
 
                 Matter.World.add(engine.world, [rectBody]);
@@ -958,11 +966,13 @@ selection.exit().remove();
             .remove();
                 </code>
             </pre>
+            <a href="../introBoMatter01.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
         <section>
-            <a href="../introBoMatter02.html#&date=2016-12-16" target="_blank">Jetzt auch mit Boden</a>
-
+            Jetzt auch mit Boden
             <pre>
                 <code data-trim data-noescape>
         var rect = Matter.Bodies.rectangle(width / 2, height+5, width, 50, {
@@ -972,10 +982,13 @@ selection.exit().remove();
         Matter.World.add(engine.world, [rect]);
                 </code>
             </pre>
+            <a href="../introBoMatter02.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
         <section>
-            <a href="../introBoMatter.html#&date=2016-12-16" target="_blank">... und noch spektakulärer</a>
+            ... und noch spektakulärer
 
             <pre class="stretch">
                 <code data-trim data-noescape>
@@ -1007,6 +1020,9 @@ selection.exit().remove();
             .remove();
                 </code>
             </pre>
+            <a href="../introBoMatter.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
         <section class="title">
@@ -1034,11 +1050,18 @@ selection.exit().remove();
         </section>
 
         <section class="title" data-transition="zoom">
-            <a href="../bechdelPack.html" target="_blank">Der Bechdel-Test</a>
+            Der Bechdel-Test<br>
+            <a href="../bechdelPack.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
         <section class="title" data-transition="zoom">
             Das D3 Pack Layout
+        </section>
+
+        <section>
+            <img src="packWithDom.png">
         </section>
 
         <section>
@@ -1051,6 +1074,10 @@ selection.exit().remove();
         const packedData = pack(data).leaves()
                 </code>
             </pre>
+        </section>
+
+        <section>
+            <img src="packedData.png">
         </section>
 
         <section>
@@ -1082,16 +1109,11 @@ selection.exit().remove();
             </pre>
         </section>
 
-        <section>
-            <img src="packedData.png">
-        </section>
-
         <section class="title" data-transition="zoom">
-            Constraints
-        </section>
-
-        <section>
-            <a href="../constraint.html#l=200&s=1" target="_blank">Lenght = 200<br>Stiffness = 1<br>Gravity = 1</a>
+            Constraints<br>
+            <a href="../constraint.html#l=200&s=1" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
         <section>
@@ -1107,11 +1129,23 @@ selection.exit().remove();
         </section>
 
         <section data-transition="zoom">
-            <a href="../constraint.html#l=100&s=.001" target="_blank">Length = 100<br>Stiffness = 0.001<br>Gravity = 1</a>
+            Stiffness = 0.001<br>
+            <a href="../constraint.html#l=100&s=.001" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
-        <section data-transition="zoom">
-            <a href="../constraint.html#l=0&s=.0001&gy=0" target="_blank"><h1>Length = 0</h1><br>Stiffness = 0.0001<br><h1>Gravity = 0</h1></a>
+        <section>
+            Und jetzt ohne Gravität
+            <pre>
+                <code data-trim data-noescape>
+            engine.world.gravity.x = 0;
+            engine.world.gravity.y = 0;
+                </code>
+            </pre>
+            <a href="../constraint.html#l=0&s=.0001&gy=0" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
         </section>
 
     </div>

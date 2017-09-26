@@ -41,7 +41,7 @@ bottle.factory("drawBechdelPack", function(container) {
                     return d.r;
                 })
                 .style("fill", function(d) {
-                    return d.data.binary == 'FAIL' ? "red" : "green";
+                    return d.data.binary == 'FAIL' ? "red" : "blue";
                 });
 
             enter.append("clipPath")
