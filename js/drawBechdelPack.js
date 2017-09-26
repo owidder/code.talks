@@ -21,7 +21,7 @@ bottle.factory("drawBechdelPack", function(container) {
             var root = d3.hierarchy({children: movies})
                 .sum(function(d) { return d.value; });
 
-            var node = svg.selectAll(".node")
+            var enter = svg.selectAll(".node")
                 .data(pack(root).leaves())
                 .enter().append("g")
                 .attr("class", "node")
@@ -29,7 +29,7 @@ bottle.factory("drawBechdelPack", function(container) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
 
-            node.append("circle")
+            enter.append("circle")
                 .attr("class", "node forlegend")
                 .attr("id", function(d) {
                     return d.data.id;
@@ -44,7 +44,7 @@ bottle.factory("drawBechdelPack", function(container) {
                     return d.data.binary == 'FAIL' ? "red" : "green";
                 });
 
-            node.append("clipPath")
+            enter.append("clipPath")
                 .attr("id", function(d) {
                     return "clip-" + d.data.id;
                 })
@@ -53,7 +53,7 @@ bottle.factory("drawBechdelPack", function(container) {
                     return "#" + d.data.id;
                 });
 
-            node.append("text")
+            enter.append("text")
                 .attr("clip-path", function(d) { return "url(#clip-" + d.data.id + ")"; })
                 .attr("class", "node")
                 .text(function (d) {

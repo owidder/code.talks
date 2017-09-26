@@ -50,6 +50,11 @@
             stroke: black;
         }
 
+        h5.timer {
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
 
     </style>
 
@@ -73,6 +78,7 @@
     <script src="../js/bo.js"></script>
     <script src="../js/Engine.js"></script>
     <script src="../js/matterD3Renderer.js"></script>
+    <script src="../js/util/Countdown.js"></script>
 
     <!-- Printing and PDF exports -->
     <script>
@@ -88,6 +94,7 @@
 <script>
     const util = bottle.container.util;
     const Engine = bottle.container.Engine;
+    const Countdown = bottle.container.Countdown;
     window.__p = {};
     function cleanAfterSlideChanged() {
         window.__p.engine && Matter.Engine.clear(window.__p.engine.world);
@@ -97,7 +104,16 @@
 <div class="reveal">
     <div class="slides">
 
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            D3 in 10 Minuten<br>
+            <a onclick="startCountdown()" class="btn-floating btn-large waves-effect waves-light cyan"><i
+                    class="material-icons">play_arrow</i></a>
+            <script src="startCountdown.js"></script>
+        </section>
+
         <section class="title">
+            <h5 class="timer"></h5>
             <img src="d3.png">
         </section>
         <!--
@@ -105,6 +121,7 @@
         -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             Data<br>
             Driven<br>
             Documents<br>
@@ -115,10 +132,12 @@
         -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             1. Daten zu DOM-Elementen hinzufügen
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre><code>
             <svg id="svg01" height="600" width="1000">
                 <circle cx="500" cy="300" r="10"></circle>
@@ -141,6 +160,7 @@
             </pre>
         </section>
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step01()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg01" height="600" width="1000">
@@ -157,11 +177,13 @@
 -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             2. Attribute der DOM-Elemente ändern<br>
             AKA "Update"
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
     <span class="old">const selection = d3.selectAll("circle")
@@ -188,6 +210,7 @@
             </pre>
         </section>
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step02()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg02" height="600" width="1000">
@@ -204,10 +227,12 @@
 -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             3. Transitionen
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
     const selection = d3.selectAll("circle")
@@ -237,6 +262,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step03()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg03" height="600" width="1000">
@@ -253,10 +279,12 @@
 -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             Daten ändern
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
     <span class="old">const selection = d3.selectAll("circle")
@@ -314,6 +342,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step04()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg04" height="600" width="1000">
@@ -331,11 +360,13 @@
 -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             4. DOM-Elemente erzeugen<br>
             AKA "Enter"
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
     <span class="old">const selection = d3.selectAll("circle")
@@ -400,6 +431,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step05()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg05" height="600" width="1000">
@@ -417,17 +449,20 @@
 -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             ... kleine Anpassung:<br>
             Wir beginnen mit einem leeren SVG-Element
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre><code>
             <svg id="svg01" height="600" width="1000"></svg>
             </code></pre>
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
     <span class="old">const selection = d3.select("svg").selectAll("circle")
@@ -498,6 +533,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step06()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg06" height="600" width="1000"></svg>
@@ -511,10 +547,12 @@
 -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             5. Exit
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
     <span class="old">const selection = d3.select("svg").selectAll("circle")
@@ -590,6 +628,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step07()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg07" height="600" width="1000"></svg>
@@ -606,6 +645,7 @@
 -->
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             Und jetzt alles zusammen:<br>
             Select<br>
             Enter<br>
@@ -614,6 +654,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
     function draw(data) {
@@ -675,6 +716,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <a onclick="step08()" class="btn-floating btn-large waves-effect waves-light cyan"><i
                     class="material-icons">play_arrow</i></a>
             <svg id="svg08" height="600" width="1000"></svg>
@@ -683,28 +725,31 @@
         </section>
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             Und jetzt ein echtes Diagram
         </section>
 
         <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
             <a href="../introBo.html#&date=2016-12-16" target="_blank">Box Office Weekend Gross</a>
         </section>
 
         <section class="title">
+            <h5 class="timer"></h5>
             <img src="data.png">
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             <pre class="stretch">
                 <code data-trim data-noescape>
-        const rectSelectionWithData = g.selectAll("rect.bar")
+        const rectSelectionWithData = g.selectAll("rect")
             .data(data, function (d) {
                 return d.title;
             });
 
         rectSelectionWithData.enter()
             .append("rect")
-            .attr("class", "bar forlegend")
             .attr("width", BAR_WIDTH)
             .style("fill", function (d) {
                 return color(d.title);
@@ -712,14 +757,13 @@
             .attr("x", function (d) {
                 return _x(d.i);
             })
-            .attr("y", _y(0))
+            .attr("y", 0)
             .merge(rectSelectionWithData)
             .transition()
             .duration(1000)
             .attr("x", function (d) {
                 return _x(d.i);
             })
-            .attr("_legend", legend)
             .attr("height", function (d) {
                 return _height(d.wg);
             })
@@ -994,6 +1038,55 @@ selection.exit().remove();
         </section>
 
         <section class="title" data-transition="zoom">
+            Das D3 Pack Layout
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+        const pack = d3.pack()
+            .size([width, height])
+            .padding(1.5);
+
+        const packedData = pack(data).leaves()
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+            var enter = svg.selectAll(".node")
+                .data(packedData)
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+
+            enter.append("circle")
+                .attr("class", "node forlegend")
+                .attr("id", function(d) {
+                    return d.data.id;
+                })
+                .attr("_legend", function (d) {
+                    return d.data.year + " / " + d.data.title + " / " + format(d.value);
+                })
+                .attr("r", function(d) {
+                    return d.r;
+                })
+                .style("fill", function(d) {
+                    return d.data.binary == 'FAIL' ? "red" : "green";
+                });
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <img src="packedData.png">
+        </section>
+
+        <section class="title" data-transition="zoom">
             Constraints
         </section>
 
@@ -1001,12 +1094,24 @@ selection.exit().remove();
             <a href="../constraint.html#l=200&s=1" target="_blank">Lenght = 200<br>Stiffness = 1<br>Gravity = 1</a>
         </section>
 
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+        const constraint = Matter.Constraint.create({bodyA: circle, pointB: {x: width/2, y:height/2},
+            length: 200,
+            stiffness: 1
+        });
+        Matter.World.add(engine.world, [constraint]);
+                </code>
+            </pre>
+        </section>
+
         <section data-transition="zoom">
             <a href="../constraint.html#l=100&s=.001" target="_blank">Length = 100<br>Stiffness = 0.001<br>Gravity = 1</a>
         </section>
 
         <section data-transition="zoom">
-            <a href="../constraint.html#l=0&s=.0001&gy=0" target="_blank">Length = 0<br>Stiffness = 0.0001<br>Gravity = 0</a>
+            <a href="../constraint.html#l=0&s=.0001&gy=0" target="_blank"><h1>Length = 0</h1><br>Stiffness = 0.0001<br><h1>Gravity = 0</h1></a>
         </section>
 
     </div>
