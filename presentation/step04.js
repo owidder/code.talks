@@ -49,5 +49,5 @@ function step04() {
                 return d.color;
             })
 
-    }, 8000);
+    }, 5500);
 }

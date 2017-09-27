@@ -61,5 +61,5 @@ function step06() {
                 return d.color;
             })
 
-    }, 8000);
+    }, 5500);
 }

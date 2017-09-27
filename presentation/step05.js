@@ -55,5 +55,5 @@ function step05() {
             .style("fill", function (d) {
                 return d.color;
             })
-    }, 8000);
+    }, 5500);
 }

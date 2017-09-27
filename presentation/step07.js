@@ -66,5 +66,5 @@ function step07() {
             .attr("r", 0)
             .style("opacity", 0)
             .remove();
-    }, 8000);
+    }, 5500);
 }

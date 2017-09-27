@@ -14,7 +14,7 @@ function step08() {
             .attr("r", 5)
             .merge(selection)
             .transition()
-            .duration(2000)
+            .duration(1000)
             .attr("cx", function (d) {
                 return d.x;
             })
@@ -53,5 +53,5 @@ function step08() {
         });
 
         draw(data);
-    }, 2000);
+    }, 1000);
 }

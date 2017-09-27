@@ -104,6 +104,19 @@
 <div class="reveal">
     <div class="slides">
 
+        <section>
+            <img src="d3.png"><br>
+            <h1>+</h1>
+            <img src="matter.png">
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Stell Dir vor, du bist in einem agilen Projekt ...<br>
+            <a href="../shatteredBars.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
+        </section>
+
         <section class="title" data-transition="zoom">
             <h5 class="timer"></h5>
             D3 in 10 Minuten<br>
@@ -336,7 +349,7 @@
                 return d.color;
             })
 
-    }, 8000);
+    }, 6000);
                 </code>
             </pre>
         </section>
@@ -889,24 +902,13 @@ selection.exit().remove();
         </section>
 
         <section>
-            <pre class="stretch">
+            <pre>
                 <code data-trim data-noescape>
-    const engine = Matter.Engine.create();
-
-    Matter.Engine.run(engine);
-
-    var d3Renderer = new MatterD3Renderer(engine, dynG, width, height);
-    Matter.Events.on(engine, "afterUpdate", function () {
-        d3Renderer.renderD3();
-    });
-
-    const svg = d3.select("svg.matterdemo")
+    const svg = d3.select("svg")
         .on("click", function () {
             const evt = d3.mouse(this);
             createCircle(evt[0], evt[1]);
         });
-
-    const dynG = svg.append("g");
 
     function createCircle(x, y) {
         const circle = Matter.Bodies.circle(x, y, 8, {
@@ -915,18 +917,6 @@ selection.exit().remove();
 
         Matter.World.add(engine.world, [circle]);
     }
-
-    function createRect() {
-        var rect = Matter.Bodies.rectangle(width/2, 4 * height/5, 5*width/10, 30, {
-            isStatic: true, color: "grey"
-        });
-
-        Matter.Body.rotate(rect, 15 / 180 * Math.PI);
-
-        Matter.World.add(engine.world, [rect]);
-    }
-
-    createRect();
                 </code>
             </pre>
         </section>
@@ -1336,6 +1326,21 @@ selection.exit().remove();
             </a>
         </section>
 
+        <section class="title" data-transition="zoom">
+            Zum Schluss
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>"Ein Leben ohne Mops ist möglich, aber sinnlos"</h1>
+            (Loriot)
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>Danke!!!!</h1>
+            <small>oliver.widder@iteratec.de</small><br>
+            <img src="iteratec.jpeg" height="100"><br>
+            <a href="http://geek-and-poke.com/">http://geek-and-poke.com/</a>
+        </section>
     </div>
 </div>
 
