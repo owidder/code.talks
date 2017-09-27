@@ -279,16 +279,23 @@
                 return d.value;
             });
 
-        const data = pack(root).leaves();
+        const packedData = pack(root).leaves();
 
-        initialDraw(data);
+        initialDraw(packedData);
 
         engine.start(tick);
         engine.world.gravity.x = 0;
         engine.world.gravity.y = 0;
 
         buttonHandler.start = function () {
-            addBodiesRecursive(data, 0);
+            if(_.isEmpty(sortAttribute)) {
+                addBodiesRecursive(packedData, 0);
+            }
+            else {
+                addBodiesRecursive(_.orderBy(packedData, function (element) {
+                    return Number(element.data[sortAttribute]);
+                }), 0);
+            }
         };
     });
 
