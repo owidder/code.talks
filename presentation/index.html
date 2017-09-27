@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>D3 in 10 Minuten</title>
+    <title>D3 und Matter.js</title>
 
     <link rel="stylesheet" href="css/reveal.css">
     <link rel="stylesheet" href="css/theme/black.css">
@@ -1144,6 +1144,114 @@ selection.exit().remove();
                 </code>
             </pre>
             <a href="../constraint.html#l=0&s=.0001&gy=0" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Das neue Layout...
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Schritt 1: Erzeuge ein Pack-Layout<br>
+            (x- und y-Werte werden allerdings nicht verwendet)
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+        const pack = d3.pack()
+            .size([width, height])
+            .padding(1.5);
+
+        const packedData = pack(data).leaves()
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Schritt 2: Male alle Circles ganz knapp außerhalb des Windows
+        </section>
+
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        const enterG = svg.selectAll("g.node")
+            .data(packedData)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                const position = randomPointJustOutsideTheScreen(d);
+                d.x = position.x;
+                d.y = position.y;
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        enterG
+            .append("circle")
+            .attr("r", function(d) {
+                return d.r;
+            })
+            .style("fill", function(d) {
+                return d.data.binary == 'FAIL' ? "red" : "blue";
+            });
+
+                </code>
+            </pre>
+            <a href="../bechdelNoPack.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Schritt 3: Erzeuge pro Data-Element einen Body mit einem Constraint zum Mittelpunkt des Windows<br>
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    function createBody(d) {
+        const circleBody = Matter.Bodies.circle(d.x, d.y, d.r+2, {
+            isStatic: false
+        });
+        d.body = circleBody;
+        Matter.World.add(engine.world, [circleBody]);
+        const constraint = Matter.Constraint.create({
+            bodyA: circleBody,
+            pointB: {x:window.innerWidth/2, y:window.innerHeight/2},
+            stiffness: 0.0001
+        });
+    }
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            ... und am besten nicht alle auf einmal
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    function createBodiesRecursive(data, index) {
+        setTimeout(function () {
+            const d = data[index];
+            createBody(d);
+            if(index < data.length-1) {
+                addBodiesRecursive(data, index+1);
+            }
+        }, 10);
+    }
+    ...
+    createBodiesRecursive(packedData, 0);
+
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <a href="../bechdelNoPack.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
                 <i class="material-icons">launch</i>
             </a>
         </section>
