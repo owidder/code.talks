@@ -40,6 +40,12 @@
         g.node text {
             fill: white;
         }
+
+        small.source {
+            position: absolute;
+            bottom: 1em;
+        }
+
     </style>
 
 </head>
@@ -47,6 +53,7 @@
 
 <div id="svgcanvas"></div>
 <h1>Bechdel Test</h1>
+<small class="source">Quelle: fivethirtyeight.com</small>
 <div class="switch">
     <label>
         <input type="checkbox" id="forceMatterSwitch" onchange="switchMatter()">

@@ -1086,9 +1086,6 @@ selection.exit().remove();
                 .attr("id", function(d) {
                     return d.data.id;
                 })
-                .attr("_legend", function (d) {
-                    return d.data.year + " / " + d.data.title + " / " + format(d.value);
-                })
                 .attr("r", function(d) {
                     return d.r;
                 })
