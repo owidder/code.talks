@@ -738,6 +738,7 @@
         </section>
 
         <section>
+            <h5 class="timer"></h5>
             Fertig
         </section>
 
@@ -917,6 +918,15 @@ selection.exit().remove();
 
         Matter.World.add(engine.world, [circle]);
     }
+
+    var rect = Matter.Bodies.rectangle(width/2, 4 * height/5, 5*width/10, 30, {
+            isStatic: true, color: "grey"
+    });
+
+    Matter.Body.rotate(rect, 15 / 180 * Math.PI);
+
+    Matter.World.add(engine.world, [rect]);
+
                 </code>
             </pre>
         </section>
@@ -1073,7 +1083,7 @@ selection.exit().remove();
         <section>
             <pre>
                 <code data-trim data-noescape>
-            var enter = svg.selectAll(".node")
+            var enter = svg.selectAll("g.node")
                 .data(packedData)
                 .enter().append("g")
                 .attr("class", "node")
@@ -1090,7 +1100,7 @@ selection.exit().remove();
                     return d.r;
                 })
                 .style("fill", function(d) {
-                    return d.data.binary == 'FAIL' ? "red" : "green";
+                    return d.data.binary == 'FAIL' ? "red" : "blue";
                 });
                 </code>
             </pre>
@@ -1339,8 +1349,10 @@ selection.exit().remove();
 
         <section class="title" data-transition="zoom">
             <small>oliver.widder@iteratec.de</small><br>
+            <small>iteratec</small><br>
             <img src="iteratec.jpeg" height="100"><br>
-            <a href="http://geek-and-poke.com/">http://geek-and-poke.com/</a>
+            <a href="http://geek-and-poke.com/">http://geek-and-poke.com/</a><br>
+            <a href="https://github.com/owidder/code.talks">https://github.com/owidder/code.talks</a>
         </section>
     </div>
 </div>
