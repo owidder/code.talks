@@ -1239,7 +1239,7 @@ selection.exit().remove();
             const d = data[index];
             createBody(d);
             if(index < data.length-1) {
-                addBodiesRecursive(data, index+1);
+                createBodiesRecursive(data, index+1);
             }
         }, 10);
     }
