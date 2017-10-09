@@ -1,6 +1,6 @@
 'use strict';
 
-/* global botlle */
+/* global bottle */
 /* global d3 */
 /* global _ */
 

@@ -1,0 +1,1491 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>D3 and Matter.js</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <style>
+        svg {
+            background: white;
+        }
+
+        mark.my {
+            border-color: white;
+            font-weight: bolder;
+            background: white;
+        }
+
+        span.old {
+            opacity: .5;
+            font-weight: lighter;
+            color: lightgrey;
+        }
+
+        circle {
+            fill: white;
+            stroke: black;
+            stroke-width: 2px;
+            opacity: .5;
+        }
+
+        pre.new {
+            background-color: lightgoldenrodyellow;
+        }
+
+        #svgcanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        line.constraint {
+            stroke: black;
+        }
+
+        h5.timer {
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../node_modules/materialize-css/dist/css/materialize.css"
+          media="screen,projection"/>
+    <link rel="stylesheet" type="text/css" href="../css/material-icons.css"/>
+
+    <script src="../node_modules/d3/build/d3.js"></script>
+    <script src="../node_modules/lodash/lodash.js"></script>
+    <script src="../node_modules/bottlejs/dist/bottle.js"></script>
+    <script>const bottle = new Bottle();</script>
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/js-url/url.js"></script>
+    <script src="../node_modules/matter-js/build/matter.js"></script>
+
+    <script src="../js/util/util.js"></script>
+    <script src="../js/util/svgUtil.js"></script>
+    <script src="../js/util/SimplePromise.js"></script>
+    <script src="../js/legend.js"></script>
+    <script src="../js/svg.js"></script>
+    <script src="../js/bo.js"></script>
+    <script src="../js/Engine.js"></script>
+    <script src="../js/matterD3Renderer.js"></script>
+    <script src="../js/util/Countdown.js"></script>
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+<body>
+
+<script>
+    const util = bottle.container.util;
+    const Engine = bottle.container.Engine;
+    const Countdown = bottle.container.Countdown;
+    window.__p = {};
+    function cleanAfterSlideChanged() {
+        window.__p.engine && Matter.Engine.clear(window.__p.engine.world);
+    }
+</script>
+
+<div class="reveal">
+    <div class="slides">
+
+        <section>
+            <img src="d3.png"><br>
+            <h1>+</h1>
+            <img src="matter.png">
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Just a small example ...<br>
+            <a href="../shatteredBars.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i><br>
+            </a><br>
+            <a href="../shatteredBars.html" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            D3 in 10 minutes<br>
+            <a onclick="startCountdown()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">timer</i>
+            </a><br>
+            <a onclick="startCountdown()">
+                <small>click here to start timer</small>
+            </a>
+            <script src="startCountdown.js"></script>
+        </section>
+
+        <section class="title">
+            <h5 class="timer"></h5>
+            <img src="d3.png">
+        </section>
+        <!--
+                    D3
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            Data<br>
+            Driven<br>
+            Documents<br>
+        </section>
+
+        <!--
+                    Daten zu DOM-Elementen hinzufügen
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            1. Add data to DOM elements
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre><code>
+            <svg id="svg01" height="600" width="1000">
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+            </svg>
+            </code></pre>
+            <pre>
+                <code data-trim data-noescape>
+
+    const selection = d3.selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:400, r:30, color:"orange"},
+            {name:"c", x:600, y:400, r:40, color:"red"}
+        ]);
+
+    console.log(document.querySelectorAll("circle"))
+                </code>
+            </pre>
+        </section>
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step01()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step01()">
+                <small>click here to start + open dev console to see log message</small>
+            </a>
+            <svg id="svg01" height="600" width="1000">
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+            </svg>
+            <script src="step01.js"></script>
+        </section>
+
+        <!--
+                    Attribute der DOM-Elemente ändern<br>
+                    AKA "Update"
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            2. Change attributes of DOM elements<br>
+            AKA "Update"
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    <span class="old">const selection = d3.selectAll("circle")
+        .data([
+            {name: "a", x: 100, y: 100, r: 20, color: "blue"},
+            {name: "b", x: 100, y: 400, r: 30, color: "orange"},
+            {name: "c", x: 600, y: 400, r: 40, color: "red"}
+        ]);</span>
+
+    selection
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+                </code>
+            </pre>
+        </section>
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step02()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step02()">
+                <small>click here to start</small>
+            </a><br>
+            <svg id="svg02" height="600" width="1000">
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+            </svg>
+
+            <script src="step02.js"></script>
+        </section>
+
+        <!--
+                        Transitionen
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            3. Transitions
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    const selection = d3.selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:400, r:30, color:"orange"},
+            {name:"c", x:600, y:400, r:40, color:"red"}
+        ]);
+
+    selection
+        <mark class="my">.transition()</mark>
+        <mark class="my">.duration(5000)</mark>
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step03()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step03()">
+                <small>click here to start</small>
+            </a><br>
+            <svg id="svg03" height="600" width="1000">
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+            </svg>
+
+            <script src="step03.js"></script>
+        </section>
+
+        <!--
+                Daten ändern
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            Change data
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    <span class="old">const selection = d3.selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:400, r:30, color:"orange"},
+            {name:"c", x:600, y:400, r:40, color:"red"}
+        ]);
+
+    selection
+        .transition()
+        .duration(5000)
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })</span>
+
+    setTimeout(function () {
+        const selection = d3.selectAll("circle")
+            .data([
+                {name:"c", x:100, y:100, r:80, color:"grey"},
+                {name:"a", x:100, y:400, r:10, color:"yellow"},
+                {name:"b", x:600, y:400, r:60, color:"cyan"}
+            ], function (d) {
+                return d.name;
+            });
+
+        selection
+            .transition()
+            .duration(5000)
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            })
+            .style("fill", function (d) {
+                return d.color;
+            })
+
+    }, 6000);
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step04()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step04()">
+                <small>click here to start</small>
+            </a><br>
+            <svg id="svg04" height="600" width="1000">
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+            </svg>
+
+            <script src="step04.js"></script>
+        </section>
+
+        <!--
+                DOM-Elemente erzeugen<br>
+                AKA "Enter"
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            4. Create DOM elements<br>
+            AKA "Enter"
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    <span class="old">const selection = d3.selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:400, r:30, color:"orange"},
+            {name:"c", x:600, y:400, r:40, color:"red"}
+        ]);
+
+    selection
+        .transition()
+        .duration(5000)
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })</span>
+
+    setTimeout(function () {
+        const selection = d3.selectAll("circle")
+            .data([
+                {name:"c", x:100, y:100, r:80, color:"grey"},
+                {name:"a", x:100, y:400, r:10, color:"yellow"},
+                <mark class="my">{name:"d", x:600, y:100, r:100, color:"green"},</mark>
+                {name:"b", x:600, y:400, r:60, color:"cyan"}
+            ], function (d) {
+                return d.name;
+            });
+
+        <mark class="my">const newElements = selection.enter()</mark>
+            <mark class="my">.append("circle")</mark>
+            <mark class="my">.attr("cx", 500)</mark>
+            <mark class="my">.attr("cy", 300)</mark>
+            <mark class="my">.attr("r", 10);</mark>
+
+        <mark class="my">newElements.merge(selection)</mark>
+            .transition()
+            .duration(5000)
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            })
+            .style("fill", function (d) {
+                return d.color;
+            })
+
+    }, 8000);
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step05()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step05()">
+                <small>click here to start</small>
+            </a><br>
+            <svg id="svg05" height="600" width="1000">
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+                <circle cx="500" cy="300" r="10"></circle>
+            </svg>
+
+            <script src="step05.js"></script>
+        </section>
+
+        <!--
+                Kleine Anpassung:<br>
+                Wir beginnen mit einem leeren SVG-Element
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            ... but normally:<br>
+            You start with an empty SVG element
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre><code>
+            <svg id="svg01" height="600" width="1000"></svg>
+            </code></pre>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    <span class="old">const selection = d3.select("svg").selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:600, r:30, color:"orange"},
+            {name:"c", x:600, y:600, r:40, color:"red"}
+        ]);</span>
+
+    selection.enter()
+        .append("circle")
+        .attr("cx", 500)
+        .attr("cy", 300)
+        .attr("r", 5)
+        .merge(selection)
+        <span class="old">.transition()
+        .duration(5000)
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+
+    setTimeout(function () {
+        const selection = d3.select("svg").selectAll("circle")
+            .data([
+                {name:"c", x:100, y:100, r:80, color:"grey"},
+                {name:"a", x:100, y:600, r:10, color:"yellow"},
+                {name:"d", x:600, y:100, r:100, color:"green"},
+                {name:"b", x:600, y:600, r:60, color:"cyan"}
+            ], function (d) {
+                return d.name;
+            });
+
+        const newElements = selection.enter()
+            .append("circle")
+            .attr("cx", 500)
+            .attr("cy", 300)
+            .attr("r", 5);
+
+        newElements.merge(selection)
+            .transition()
+            .duration(5000)
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            })
+            .style("fill", function (d) {
+                return d.color;
+            })
+
+    }, 8000);</span>
+
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step06()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step06()">
+                <small>click here to start</small>
+            </a><br>
+            <svg id="svg06" height="600" width="1000"></svg>
+
+            <script src="step06.js"></script>
+        </section>
+
+        <!--
+                Zum Schluss (nicht ganz):<br>
+                Der exit
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            5. Exit
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    <span class="old">const selection = d3.select("svg").selectAll("circle")
+        .data([
+            {name:"a", x:100, y:100, r:20, color:"blue"},
+            {name:"b", x:100, y:600, r:30, color:"orange"},
+            {name:"c", x:600, y:600, r:40, color:"red"}
+        ]);
+
+    selection.enter()
+        .append("circle")
+        .attr("cx", 500)
+        .attr("cy", 300)
+        .attr("r", 5)
+        .merge(selection)
+        .transition()
+        .duration(5000)
+        .attr("cx", function (d) {
+            return d.x;
+        })
+        .attr("cy", function (d) {
+            return d.y;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+
+    setTimeout(function () {
+        const selection = d3.select("svg").selectAll("circle")
+            .data([</span>
+                {name:"c", x:100, y:100, r:80, color:"grey"},
+                {name:"d", x:600, y:100, r:100, color:"green"},
+                {name:"b", x:600, y:600, r:60, color:"cyan"}
+            <span class="old">], function (d) {
+                return d.name;
+            });
+
+        const newElements = selection.enter()
+            .append("circle")
+            .attr("cx", 500)
+            .attr("cy", 300)
+            .attr("r", 5);
+
+        newElements.merge(selection)
+            .transition()
+            .duration(5000)
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            })
+            .style("fill", function (d) {
+                return d.color;
+            })</span>
+
+        selection.exit()
+            .transition()
+            .duration(5000)
+            .attr("r", 0)
+            .style("opacity", 0)
+            .remove();
+    <span class="old">}, 8000);</span>
+
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step07()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step07()">
+                <small>click here to start</small>
+            </a><br>
+            <svg id="svg07" height="600" width="1000"></svg>
+
+            <script src="step07.js"></script>
+        </section>
+
+        <!--
+                Und jetzt alles zusammen:<br>
+                Select<br>
+                Enter<br>
+                Update<br>
+                Exit<br>
+        -->
+
+        <section class="title" data-transition="zoom">
+            <h5 class="timer"></h5>
+            And now all together:<br>
+            Select<br>
+            Enter<br>
+            Update<br>
+            Exit<br>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+    function draw(data) {
+        const selection = svg.selectAll("circle")
+            .data(data, function (d) {
+                return d.name;
+            });
+
+        selection.enter()
+            .append("circle")
+            .attr("cx", 500)
+            .attr("cy", 300)
+            .attr("r", 5)
+            .merge(selection)
+            .transition()
+            .duration(2000)
+            .attr("cx", function (d) {
+                return d.x;
+            })
+            .attr("cy", function (d) {
+                return d.y;
+            })
+            .attr("r", function (d) {
+                return d.r;
+            })
+            .style("fill", function (d) {
+                return d.color;
+            });
+
+        selection.exit()
+            .transition()
+            .duration(500)
+            .attr("r", 0)
+            .style("opacity", 0)
+            .remove();
+    }
+
+    const color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    setInterval(function () {
+        const data = [];
+        _.range(20).forEach(function(i) {
+            if(_.random(0, 9) > 0) {
+                data.push({
+                    name: i,
+                    x: _.random(0, 1000),
+                    y: _.random(0, 600),
+                    r: _.random(5, 50),
+                    color: color(i)
+                });
+            }
+        });
+
+        draw(data);
+    }, 1000);
+
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            <a onclick="step08()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="step08()">
+                <small>click here to start</small>
+            </a><br>
+            <svg id="svg08" height="600" width="1000"></svg>
+
+            <script src="step08.js"></script>
+        </section>
+
+        <section>
+            <h5 class="timer"></h5>
+            That's it!
+        </section>
+
+        <section class="title" data-transition="zoom">
+            And now a real chart
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Box Office Weekend Gross<br>
+            <a href="../introBo.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../introBo.html#&date=2016-12-16" target="_blank">
+                <small>click here</small>
+            </a><br>
+
+        </section>
+
+        <section class="title">
+            <small>The structure of box office weekend gross data</small><br>
+            <img src="data.png">
+        </section>
+
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        const rectSelectionWithData = g.selectAll("rect")
+            .data(data, function (d) {
+                return d.title;
+            });
+
+        rectSelectionWithData.enter()
+            .append("rect")
+            .attr("width", BAR_WIDTH)
+            .style("fill", function (d) {
+                return color(d.title);
+            })
+            .attr("x", function (d) {
+                return _x(d.i);
+            })
+            .attr("y", 0)
+            .merge(rectSelectionWithData)
+            .transition()
+            .duration(1000)
+            .attr("x", function (d) {
+                return _x(d.i);
+            })
+            .attr("height", function (d) {
+                return _height(d.wg);
+            })
+            .attr("y", function (d) {
+                return _y(d.wg);
+            });
+
+        rectSelectionWithData.exit().remove();
+
+                </code>
+            </pre>
+        </section>
+
+        <section class="title">
+            <small>Now we wanna pimp this chart with some physic</small><br>
+            <img src="matter.png">
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    const engine = Matter.Engine.create();
+    Matter.Engine.run(engine);
+
+    const body = Matter.Bodies.circle(100, 100, 10, {
+        isStatic: false
+    });
+
+    Matter.World.add(engine.world, [body]);
+
+    Matter.Events.on(engine, "afterUpdate", function () {
+        document.querySelector("h1#matterdemo").innerHTML = body.position.y;
+    });
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h1 id="matterdemo"></h1>
+            <a onclick="matterExample()" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">play_arrow</i>
+            </a><br>
+            <a onclick="matterExample()">
+                <small>click here to start</small>
+            </a><br>
+            <script src="matterExample.js"></script>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            A Matter.js body contains it's shape as line segments
+        </section>
+
+        <section class="title">
+            <img src="vertices.png">
+        </section>
+
+        <section class="title" data-transition="zoom">
+            SVG Paths
+        </section>
+
+        <section>
+            <pre><code>
+            <svg width="100" height="100">
+                <path d=" M 10 25 L 10 75 L 60 75 Z"
+                      stroke="black"
+                      stroke-width="3"
+                      fill="none" />
+            </svg>
+            </code></pre>
+            <svg width="100" height="100">
+                <path d=" M 10 25 L 10 75 L 60 75 Z" stroke="black" stroke-width="3" fill="none" />
+            </svg>
+        </section>
+
+        <section>
+            <img src="vertices.png" height="300">
+            <pre><code>
+            <svg width="100" height="100">
+                <path d="M 484.7241983071568 617.8601575689513 L487.23287759867395 613.5997157829022 L491.7665194489434 611.6274887235894 L496.59346509089136 612.6971539841638 L499.8699553553893 616.3997810983425 L500.3444625366909 621.3209576786828 L497.83578324517384 625.5813994647319 L493.3021413949044 627.5536265240447 L488.47519575295655 626.4839612634704 L485.1987054884584 622.7813341492916 Z"
+                      stroke="black"
+                      stroke-width="3"
+                      fill="none" />
+            </svg>
+            </code></pre>
+            <svg width="200" height="100">
+                <path d=" M 84.7241983071568 17.8601575689513 L87.23287759867395 13.5997157829022 L91.7665194489434 11.6274887235894 L96.59346509089136 12.6971539841638 L99.8699553553893 16.3997810983425 L100.3444625366909 21.3209576786828 L97.83578324517384 25.5813994647319 L93.3021413949044 27.5536265240447 L88.47519575295655 26.4839612634704 L85.1987054884584 22.7813341492916 Z"
+                      stroke="black"
+                      stroke-width="3"
+                      fill="none" />
+            </svg>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            A D3 renderer for Matter.js
+        </section>
+
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+const bodies = Matter.Composite.allBodies(engine.world);
+
+const selection = d3.selectAll("path.body")
+    .data(bodies, function(d) {
+        return d.id;
+    });
+
+selection.enter()
+    .append("path");
+    .attr("class", "body")
+    .merge(selection)
+    .attr("d", function (d) {
+        return "M " + d.vertices.map(function (v) {
+                return v.x + " " + v.y;
+            }).join(" L") + " Z";
+    });
+
+selection.exit().remove();
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            A simple example
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    const svg = d3.select("svg")
+        .on("click", function () {
+            const evt = d3.mouse(this);
+            createCircle(evt[0], evt[1]);
+        });
+
+    function createCircle(x, y) {
+        const circle = Matter.Bodies.circle(x, y, 8, {
+            isStatic: false, color: "blue"
+        });
+
+        Matter.World.add(engine.world, [circle]);
+    }
+
+    var rect = Matter.Bodies.rectangle(width/2, 4 * height/5, 5*width/10, 30, {
+            isStatic: true, color: "grey"
+    });
+
+    Matter.Body.rotate(rect, 15 / 180 * Math.PI);
+
+    Matter.World.add(engine.world, [rect]);
+
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <small>click anywhere in the white area</small><br>
+            <svg class="matterdemo" width="800" height="500"></svg>
+            <script src="matterDemo.js"></script>
+            <script>matterDemo(800, 500)</script>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            And once again Box Office Weekend Gross<br>
+            <a href="../introBo.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../introBo.html#&date=2016-12-16" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section>
+            A slightly more spectactular exit (thanks to physics)
+
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        rectSelectionWithData.exit()
+            .each(function (d) {
+                const bodyX = _x(d.i) + BAR_WIDTH / 2;
+                const bodyY = d.y + d.height / 2;
+
+                const rectBody = Matter.Bodies.rectangle(bodyX, bodyY, BAR_WIDTH, d.height, {
+                    isStatic: false,
+                    color: color(d.title),
+                    title: d.title
+                });
+
+                Matter.World.add(engine.world, [rectBody]);
+
+            })
+            .remove();
+                </code>
+            </pre><br>
+            <a href="../introBoMatter01.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../introBoMatter01.html#&date=2016-12-16" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section>
+            Now with solid ground
+            <pre>
+                <code data-trim data-noescape>
+        var rect = Matter.Bodies.rectangle(width / 2, height+5, width, 50, {
+            isStatic: true, color: "grey", className: "matter"
+        });
+
+        Matter.World.add(engine.world, [rect]);
+                </code>
+            </pre>
+            <a href="../introBoMatter02.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../introBoMatter02.html#&date=2016-12-16" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section>
+            ... and even more spectacular
+
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        <span class="old">rectSelectionWithData.exit()
+            .each(function (d) {
+                const x = _x(d.i);
+                const bodyX = x + BAR_WIDTH / 2;
+                const bodyY = d.y + d.height / 2;
+
+                const rectBody = Matter.Bodies.rectangle(bodyX, bodyY, BAR_WIDTH, d.height, {
+                    isStatic: false, __data: d, color: color(d.title), className: "matter forlegend",
+                    _legend: legend(d), title: d.title
+                });</span>
+
+                const circleBody = Matter.Bodies.circle(x + 10, BAR_OFFSET_Y + 100, 2, {
+                    isStatic: true, color: "grey", className: "matter"
+                });
+
+                Matter.World.add(engine.world, [rectBody, circleBody]);
+
+                setTimeout(function () {
+                    Matter.World.remove(engine.world, circleBody);
+                }, 3000);
+
+                setTimeout(function () {
+                    Matter.World.remove(engine.world, rectBody);
+                }, 20000)
+            })
+            .remove();
+                </code>
+            </pre>
+            <a href="../introBoMatter.html#&date=2016-12-16" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../introBoMatter.html#&date=2016-12-16" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section class="title">
+            OK? And now?
+        </section>
+
+        <section class="title">
+            Maybe nice, but ...?
+        </section>
+
+        <section class="title">
+            Show me something new!<br>
+        </section>
+
+        <section class="title">
+            A new layout would be nice<br>
+        </section>
+
+        <section class="title">
+            Just a litte distraction
+        </section>
+
+        <section>
+            <h1>Alison Bechdel</h1>
+            <img src="bechdel.png" height="500"><br>
+            <small>By Michael Rhode - 101_3633 Alison Bechdel, CC BY 2.0, https://commons.wikimedia.org/w/index.php?curid=20333893</small>
+        </section>
+
+        <section>
+            <h1>Fun Home</h1>
+            <img src="funhome.png" height="500"><br>
+            <small>Fair use, https://en.wikipedia.org/w/index.php?curid=7110859</small>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            The Bechdel test<br>
+            <a href="../bechdelPack.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../bechdelPack.html" target="_blank">
+                <small>click here (and hover over the bubbles to see name of the film and budget)</small>
+            </a><br>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            D3 Pack layout
+        </section>
+
+        <section>
+            <img src="packWithDom.png">
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+        const pack = d3.pack()
+            .size([width, height])
+            .padding(1.5);
+
+        const packedData = pack(data).leaves()
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <img src="packedData.png">
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+            var enter = svg.selectAll("g.node")
+                .data(packedData)
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+
+            enter.append("circle")
+                .attr("class", "node forlegend")
+                .attr("id", function(d) {
+                    return d.data.id;
+                })
+                .attr("r", function(d) {
+                    return d.r;
+                })
+                .style("fill", function(d) {
+                    return d.data.binary == 'FAIL' ? "red" : "blue";
+                });
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            Constraints<br>
+            <a href="../constraint.html#l=200&s=1" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../constraint.html#l=200&s=1" target="_blank">
+                <small>click here (+ click anywhere in the upcoming screen)</small>
+            </a><br>
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+        const constraint = Matter.Constraint.create({bodyA: circle, pointB: {x: width/2, y:height/2},
+            length: 200,
+            stiffness: 1
+        });
+        Matter.World.add(engine.world, [constraint]);
+                </code>
+            </pre>
+        </section>
+
+        <section data-transition="zoom">
+            Stiffness = 0.001<br>
+            <a href="../constraint.html#l=100&s=.001" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../constraint.html#l=100&s=.001" target="_blank">
+                <small>click here (+ click anywhere in the upcoming screen)</small>
+            </a><br>
+        </section>
+
+        <section>
+            Now without gravity
+            <pre>
+                <code data-trim data-noescape>
+            engine.world.gravity.x = 0;
+            engine.world.gravity.y = 0;
+                </code>
+            </pre>
+            <a href="../constraint.html#l=0&s=.0001&gy=0" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../constraint.html#l=0&s=.0001&gy=0" target="_blank">
+                <small>click here (+ click anywhere in the upcoming screen)</small>
+            </a><br>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            The new layout...
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>Step 1</h1>
+            Create a Pack layout<br>
+            (we'll only use x and y)
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+        const pack = d3.pack()
+            .size([width, height])
+            .padding(1.5);
+
+        const packedData = pack(data).leaves()
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>Step 2</h1>
+            Draw all circles just outside the screen
+        </section>
+
+        <section>
+            <pre class="stretch">
+                <code data-trim data-noescape>
+        const enterG = svg.selectAll("g.node")
+            .data(packedData)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                const position = randomPointJustOutsideTheScreen(d);
+                d.x = position.x;
+                d.y = position.y;
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        enterG
+            .append("circle")
+            .attr("r", function(d) {
+                return d.r;
+            })
+            .style("fill", function(d) {
+                return d.data.binary == 'FAIL' ? "red" : "blue";
+            });
+
+                </code>
+            </pre>
+            <a href="../bechdelNoPack.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../bechdelNoPack.html" target="_blank">
+                <small>click here (+ scroll right or down to see the outside circles)</small>
+            </a><br>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>Step 3</h1>
+            Create for each circle a constraint towards the center of the screen<br>
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    function createBody(d) {
+        const circleBody = Matter.Bodies.circle(d.x, d.y, d.r+2, {
+            isStatic: false
+        });
+        d.body = circleBody;
+        Matter.World.add(engine.world, [circleBody]);
+        const constraint = Matter.Constraint.create({
+            bodyA: circleBody,
+            pointB: {x:window.innerWidth/2, y:window.innerHeight/2},
+            stiffness: 0.0001
+        });
+    }
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            ... don't create them all at once
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    function createBodiesRecursive(data, index) {
+        setTimeout(function () {
+            const d = data[index];
+            createBody(d);
+            if(index < data.length-1) {
+                createBodiesRecursive(data, index+1);
+            }
+        }, 10);
+    }
+    ...
+    createBodiesRecursive(packedData, 0);
+
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>Step 4</h1>
+            Gentlemen! Start your engine!
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+            const engine = Matter.Engine.create();
+            Matter.Engine.run(engine);
+            Matter.Events.on(engine, "afterUpdate", function () {
+                tick();
+            });
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>Step 5</h1>
+            With every Tick ("afterUpdate") do an update
+        </section>
+
+        <section>
+            <pre>
+                <code data-trim data-noescape>
+    function tick() {
+        g.selectAll("g.node")
+            .attr("transform", function(d) {
+                return "translate(" + d.body.position.x + "," + d.body.position.y + ")";
+            });
+    }
+
+                </code>
+            </pre>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <h1>Ta taaa</h1>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i>
+            <i class="material-icons">music_note</i><br>
+            <a href="../bechdelNoPack.html" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../bechdelNoPack.html" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            And now sorted (first years first)<br>
+            <pre>
+                <code data-trim data-noescape>
+                createBodiesRecursive(_.orderBy(packedData, function (element) {
+                    return Number(element.data.year);
+                }), 0);
+                </code>
+            </pre>
+            <a href="../bechdelNoPack.html#sort=year" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../bechdelNoPack.html#sort=year" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section>
+            ... or small budgets first<br>
+            <pre>
+                <code data-trim data-noescape>
+                createBodiesRecursive(_.orderBy(packedData, function (element) {
+                    return Number(element.data.budget);
+                }), 0);
+                </code>
+            </pre>
+            <a href="../bechdelNoPack.html#sort=budget" target="_blank" class="btn-floating btn-large waves-effect waves-light cyan">
+                <i class="material-icons">launch</i>
+            </a><br>
+            <a href="../bechdelNoPack.html#sort=budget" target="_blank">
+                <small>click here</small>
+            </a><br>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            At the end:<br>
+            Why? What's it for?
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>"A live without a pug is possible, but useless"</h1>
+            (Loriot)
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <h1>Thanks!!!!</h1>
+        </section>
+
+        <section class="title" data-transition="zoom">
+            <small>oliver.widder@iteratec.de</small><br>
+            <small>iteratec</small><br>
+            <img src="iteratec.jpeg" height="100"><br>
+            <a href="http://geek-and-poke.com/">http://geek-and-poke.com/</a><br>
+            <a href="https://github.com/owidder/code.talks">https://github.com/owidder/code.talks</a>
+        </section>
+    </div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+    // More info about config & dependencies:
+    // - https://github.com/hakimel/reveal.js#configuration
+    // - https://github.com/hakimel/reveal.js#dependencies
+    Reveal.initialize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        margin: 0,
+        transition: 'slide', // default/cube/page/concave/zoom/linear/fade/none
+        keyboard: {
+            13: function () {
+                const slideno = util.getHashParam("s", "0");
+                Reveal.slide(slideno);
+            }
+        },
+        dependencies: [
+            {src: 'plugin/markdown/marked.js'},
+            {src: 'plugin/markdown/markdown.js'},
+            {src: 'plugin/notes/notes.js', async: true},
+            {
+                src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            }
+        ]
+    });
+
+    Reveal.addEventListener( 'slidechanged', function( event ) {
+        var slideno = event.indexh;
+        util.changeHashParam("s", slideno);
+        cleanAfterSlideChanged();
+    });
+
+</script>
+</body>
+</html>
