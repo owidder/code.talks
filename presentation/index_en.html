@@ -1003,6 +1003,7 @@ selection.exit().remove();
                 <code data-trim data-noescape>
         rectSelectionWithData.exit()
             .each(function (d) {
+                // before removing create a body so that it falls down
                 const bodyX = _x(d.i) + BAR_WIDTH / 2;
                 const bodyY = d.y + d.height / 2;
 
@@ -1030,6 +1031,7 @@ selection.exit().remove();
             Now with solid ground
             <pre>
                 <code data-trim data-noescape>
+        // create a static rectangle so that the bars do not fall out of the window
         var rect = Matter.Bodies.rectangle(width / 2, height+5, width, 50, {
             isStatic: true, color: "grey", className: "matter"
         });
@@ -1061,6 +1063,8 @@ selection.exit().remove();
                     _legend: legend(d), title: d.title
                 });</span>
 
+                // create a small static circle beneath each falling bar,
+                // so that it rotates
                 const circleBody = Matter.Bodies.circle(x + 10, BAR_OFFSET_Y + 100, 2, {
                     isStatic: true, color: "grey", className: "matter"
                 });
@@ -1103,7 +1107,7 @@ selection.exit().remove();
         </section>
 
         <section class="title">
-            Just a litte distraction
+            To get there: Just a litte distraction
         </section>
 
         <section>
@@ -1115,6 +1119,7 @@ selection.exit().remove();
         <section>
             <h1>Fun Home</h1>
             <img src="funhome.png" height="500"><br>
+            <small>I really do like this <a href="https://en.wikipedia.org/wiki/Fun_Home">book</a> and the <a href="https://en.wikipedia.org/wiki/Fun_Home_(musical)">musical based on it</a></small>
             <small>Fair use, https://en.wikipedia.org/w/index.php?curid=7110859</small>
         </section>
 
